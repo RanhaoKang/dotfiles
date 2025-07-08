@@ -1,0 +1,3 @@
+#!/usr/bin/sh
+alias love='exec ~/love-cdf68b3228f3092cdb5425cb6d7555e3ea52ee8e.AppImage'
+love ~/yua-lua &

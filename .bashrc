@@ -8,3 +8,4 @@ alias ..='cd ..'
 alias tig="tig status"
 alias ls="ls --color"
 alias ll="ls -l"
+alias open="nnn"

@@ -1,13 +1,25 @@
 -- Core --
-vim.opt.encoding = 'utf-8'
-vim.opt.number = true
-vim.opt.clipboard = 'unnamed'
-vim.opt.background = 'dark'
-vim.opt.termguicolors = true
+local opt = vim.opt
+opt.encoding = 'utf-8'
+opt.number = true
+opt.clipboard = 'unnamed'
+opt.background = 'dark'
+opt.termguicolors = true
+opt.tabstop = 4
+opt.shiftwidth = 4
+opt.expandtab = true
+opt.smartindent = true
+opt.wrap = true
+opt.spell = true
+opt.spelllang = { 'en' }
+
+opt.completeopt = { 'menuone', 'noinsert', 'fuzzy' }
+-- vim.cmd[[set completeopt+=menuone,noselect,popup]]
 
 -- Mapping --
 vim.api.nvim_set_keymap('n', 'H', '<C-w>h', { noremap = true, silent = true })
 vim.api.nvim_set_keymap('n', 'L', '<C-w>l', { noremap = true, silent = true })
+vim.api.nvim_set_keymap("i", "<Tab>", 'pumvisible() ? "<C-y>" : "<Tab>"', { expr = true })
 
 -- LSP --
 vim.lsp.config['luals'] = {
@@ -28,37 +40,31 @@ vim.lsp.config['luals'] = {
     Lua = {
       runtime = {
         version = 'Lua5.3',
+      },
+      completion = {
+        callSnippet = "Replace" -- or "Both" or "None"
       }
     }
-  }
+  },
+  capabilities = vim.lsp.protocol.make_client_capabilities()
 }
 
 vim.lsp.enable('luals')
-
---[[ vim.cmd [[
-autocmd BufRead,BufNewFile *.lua.txt set filetype=lua
-nnoremap KK :vsplit<CR>:LspGotoDefinition<CR>
-nnoremap K :LspHover<CR>
-" nnoremap KKK :FindMe<CR>
-
-function! FindMe()
-	let command = 'fd --type f ' . expand('<cword>') . '|  grep -v meta | grep lua'
-	let output = system(command)
-	if !empty(output)
-        let files = split(trim(output), '\n')
-        for file in files
-            execute 'silent! botright vnew ' . file
-            execute 'silent! setf lua'
-        endfor
-	endif
-endfunction
-nnoremap KKK :call FindMe()<CR>
-]]
 vim.api.nvim_create_autocmd({"BufRead", "BufNewFile"}, {
     pattern = {"*.lua.txt"},
     callback = function()
         vim.opt.filetype = 'lua'
     end
+})
+vim.api.nvim_create_autocmd('LspAttach', {
+  callback = function(ev)
+    local client = vim.lsp.get_client_by_id(ev.data.client_id)
+    if client:supports_method('textDocument/completion') then
+        local chars = {}; for i = 32, 126 do table.insert(chars, string.char(i)) end
+        client.server_capabilities.completionProvider.triggerCharacters = chars
+        vim.lsp.completion.enable(true, client.id, ev.buf, { autotrigger = true })
+    end
+  end,
 })
 
 vim.api.nvim_set_keymap('n', 'KK', ':vsplit<CR>:LspGotoDefinition<CR>', { noremap = true, silent = true })
@@ -81,12 +87,23 @@ vim.api.nvim_set_keymap('n', 'KKK', ':lua FindMe()<CR>', { noremap = true, silen
 
 
 -- Plugins --
+-- install vim-plug via: sh -c 'curl -fLo "${XDG_DATA_HOME:-$HOME/.local/share}"/nvim/site/autoload/plug.vim --create-dirs https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim'
 vim.cmd [[
 call plug#begin()
-Plug 'lifepillar/gruvbox8'
 Plug 'preservim/nerdtree'
 Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }
 Plug 'junegunn/fzf.vim'
+Plug 'm4xshen/autoclose.nvim'
+Plug 'justinmk/vim-sneak'
 call plug#end()
 ]]
 vim.api.nvim_set_keymap('n', '<C-p>', ':Files<CR>', { noremap = true, silent = true })
+
+require("autoclose").setup()
+
+
+----[[
+
+-- Experiment --
+
+--]]

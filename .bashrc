@@ -7,11 +7,20 @@ export EDITOR=vim
 export BROWSER=firefox
 export TERMINAL=foot
 export SHELL=/bin/bash
-export FILE_MANAGER=nnn
-export FILE=nnn
+export FILE_MANAGER=yazi
+export FILE=yazi
 
 alias ..='cd ..'
 alias tig="tig status"
 alias ls="ls --color"
 alias ll="ls -l"
-alias open="nnn"
+alias open="yazi"
+function y() {
+	local tmp="$(mktemp -t "yazi-cwd.XXXXXX")" cwd
+	yazi "$@" --cwd-file="$tmp"
+	IFS= read -r -d '' cwd < "$tmp"
+	[ -n "$cwd" ] && [ "$cwd" != "$PWD" ] && builtin cd -- "$cwd"
+	rm -f -- "$tmp"
+}
+trap "" SIGTSTP
+eval "$(lua $HOME/dotfiles/z.lua --init bash)"

@@ -38,6 +38,8 @@ nnoremap <A-6> 6gt
 nnoremap <A-7> 7gt
 nnoremap <A-8> 8gt
 nnoremap <A-9> 9gt 
+nnoremap H <C-w>h
+nnoremap L <C-w>l
 
 set background=dark
 colorscheme gruvbox8
@@ -61,6 +63,20 @@ nnoremap <C-p> :Files<CR>
 autocmd BufRead,BufNewFile *.lua.txt set filetype=lua
 nnoremap KK :vsplit<CR>:LspGotoDefinition<CR>
 nnoremap K :LspHover<CR>
+" nnoremap KKK :FindMe<CR>
+
+function! FindMe()
+	let command = 'fd --type f ' . expand('<cword>') . '|  grep -v meta | grep lua'
+	let output = system(command)
+	if !empty(output)
+        let files = split(trim(output), '\n')
+        for file in files
+            execute 'silent! botright vnew ' . file
+            execute 'silent! setf lua'
+        endfor
+	endif
+endfunction
+nnoremap KKK :call FindMe()<CR>
 
 function! PushLSWork(file_path)
     " Debug: Show the file path being processed
@@ -72,7 +88,7 @@ function! PushLSWork(file_path)
     let awk_cmd = "awk -F\"'\" '{print $2}'"
     let sort_cmd = 'sort'
     let uniq_cmd = 'uniq'
-    let fd_cmd = 'xargs -I {} fd {} --type f | grep -v meta'
+    let fd_cmd = 'xargs -I {} fd {} --type f | grep -v meta | grep lua.txt'
 
     " Combine the commands into a single command string
     let command = luacheck_cmd . ' | ' . grep_cmd . ' | ' . awk_cmd . ' | ' . sort_cmd . ' | ' . uniq_cmd . ' | ' . fd_cmd
@@ -89,16 +105,16 @@ function! PushLSWork(file_path)
 
     " Display the output
     if !empty(output)
-        " echo "Warnings/Errors found:"
-        echo output
-
         " Split the output into a list of variable names
         let variable_names = split(output, '\n')
 
         " Iterate over each variable name
         for path in variable_names
             if !empty(path)
-                execute 'silent tabedit ' . shellescape(path)
+                " echo "kkwtf" . shellescape(path)
+                execute 'silent! tabedit ' . path
+                execute 'setf lua'
+                execute 'silent! tabclose'
             endif
         endfor
     else
@@ -107,4 +123,4 @@ function! PushLSWork(file_path)
 endfunction
 
 
-autocmd BufRead,BufNewFile *.lua.txt call PushLSWork(expand("%:p"))
+" autocmd BufRead,BufNewFile *.lua.txt call PushLSWork(expand("%:p"))

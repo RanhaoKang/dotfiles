@@ -1,0 +1,10 @@
+#!/usr/bin/sh
+swaymsg 'workspace 1'
+swaymsg 'layout stacking'
+foot &
+code &
+sleep 1
+swaymsg 'workspace 2'
+swaymsg 'layout stacking'
+cosmic-files &
+firefox &

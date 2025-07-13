@@ -2,16 +2,24 @@
 local opt = vim.opt
 opt.encoding = 'utf-8'
 opt.number = true
-opt.clipboard = 'unnamed'
+opt.clipboard = 'unnamedplus'
 opt.background = 'dark'
 opt.termguicolors = true
 opt.tabstop = 4
 opt.shiftwidth = 4
 opt.expandtab = true
 opt.smartindent = true
-opt.wrap = true
+opt.wrap = false
 opt.spell = true
 opt.spelllang = { 'en' }
+opt.undofile = true
+opt.backup = false
+opt.writebackup = false
+opt.ignorecase = true
+opt.smartcase = true
+opt.foldmethod = "indent"
+opt.foldlevel = 4
+opt.pumheight = 7
 
 opt.completeopt = { 'menuone', 'noinsert', 'fuzzy' }
 -- vim.cmd[[set completeopt+=menuone,noselect,popup]]
@@ -20,6 +28,15 @@ opt.completeopt = { 'menuone', 'noinsert', 'fuzzy' }
 vim.api.nvim_set_keymap('n', 'H', '<C-w>h', { noremap = true, silent = true })
 vim.api.nvim_set_keymap('n', 'L', '<C-w>l', { noremap = true, silent = true })
 vim.api.nvim_set_keymap("i", "<Tab>", 'pumvisible() ? "<C-y>" : "<Tab>"', { expr = true })
+local map = vim.keymap.set
+map({"n", "v"}, "x", "_x")
+map("i", "<>", "<><left>", { desc = "Enter into angled brackets" })
+map("i", "()", "()<left>", { desc = "Enter into round brackets" })
+map("i", "{}", "{}<left>", { desc = "Enter into curly brackets" })
+map("i", "[]", "[]<left>", { desc = "Enter into square brackets" })
+map("i", '""', '""<left>', { desc = "Enter into double quotes" })
+map("i", "''", "''<left>", { desc = "Enter into single quotes" })
+map("i", "``", "``<left>", { desc = "Enter into backticks" })
 
 -- LSP --
 vim.lsp.config['luals'] = {
@@ -68,7 +85,7 @@ vim.api.nvim_create_autocmd('LspAttach', {
 })
 
 vim.api.nvim_set_keymap('n', 'KK', ':vsplit<CR>:LspGotoDefinition<CR>', { noremap = true, silent = true })
-vim.api.nvim_set_keymap('n', 'K', ':LspHover<CR>', { noremap = true, silent = true })
+map("n", "K", vim.lsp.buf.hover, { desc = "Hover" })
 
 function FindMe()
     local command = 'fd --type f ' .. vim.fn.expand('<cword>') .. ' | grep -v meta | grep lua'
@@ -93,14 +110,10 @@ call plug#begin()
 Plug 'preservim/nerdtree'
 Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }
 Plug 'junegunn/fzf.vim'
-Plug 'm4xshen/autoclose.nvim'
 Plug 'justinmk/vim-sneak'
 call plug#end()
 ]]
 vim.api.nvim_set_keymap('n', '<C-p>', ':Files<CR>', { noremap = true, silent = true })
-
-require("autoclose").setup()
-
 
 ----[[
 

@@ -14,8 +14,6 @@ alias ..='cd ..'
 alias tig="tig status"
 alias ls="ls --color"
 alias ll="ls -l"
-alias open="yazi"
-alias vi=nvim
 function y() {
 	local tmp="$(mktemp -t "yazi-cwd.XXXXXX")" cwd
 	yazi "$@" --cwd-file="$tmp"
@@ -23,6 +21,17 @@ function y() {
 	[ -n "$cwd" ] && [ "$cwd" != "$PWD" ] && builtin cd -- "$cwd"
 	rm -f -- "$tmp"
 }
+alias open=y
 trap "" SIGTSTP
-alias vvi='xargs -o nvim'
+alias pac=pacman
+
+function vi() {
+    if [ -t 0 ]; then
+        # No content in stdin, behave like nvim
+        command nvim "$@"
+    else
+        # Content in stdin, use xargs to pass it to nvim
+        xargs -o nvim
+    fi
+}
 

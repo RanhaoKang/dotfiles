@@ -20,14 +20,17 @@ opt.smartcase = true
 opt.foldmethod = "indent"
 opt.foldlevel = 4
 opt.pumheight = 7
+opt.scrolloff = 5
 
 opt.completeopt = { 'menuone', 'noinsert', 'fuzzy' }
 
 -- Mapping --
-vim.api.nvim_set_keymap('n', 'H', '<C-w>h', { noremap = true, silent = true })
-vim.api.nvim_set_keymap('n', 'L', '<C-w>l', { noremap = true, silent = true })
 vim.api.nvim_set_keymap("i", "<Tab>", 'pumvisible() ? "<C-y>" : "<Tab>"', { expr = true })
 local map = vim.keymap.set
+map('n', 'H', '^')
+map('n', 'L', '$')
+map('n', 'J', '20j')
+map('n', 'K', '20k')
 map("i", "<>", "<><left>", { desc = "Enter into angled brackets" })
 map("i", "()", "()<left>", { desc = "Enter into round brackets" })
 map("i", "()<CR>", "()<CR>", { desc = "Enter into round brackets" })
@@ -88,8 +91,7 @@ vim.api.nvim_create_autocmd('LspAttach', {
   end,
 })
 
-vim.api.nvim_set_keymap('n', 'KK', ':vsplit<CR>:LspGotoDefinition<CR>', { noremap = true, silent = true })
-map("n", "K", vim.lsp.buf.hover, { desc = "Hover" })
+vim.api.nvim_set_keymap('n', '<leader>kk', ':vsplit<CR>:LspGotoDefinition<CR>', { noremap = true, silent = true })
 
 function FindMe()
     local command = 'fd --type f ' .. vim.fn.expand('<cword>') .. ' | grep -v meta | grep lua'
@@ -104,7 +106,7 @@ function FindMe()
 end
 
 -- 设置 KKK 键映射
-vim.api.nvim_set_keymap('n', 'KKK', ':lua FindMe()<CR>', { noremap = true, silent = true })
+vim.api.nvim_set_keymap('n', '<leader>kkk', ':lua FindMe()<CR>', { noremap = true, silent = true })
 
 
 -- Plugins --
@@ -119,11 +121,9 @@ Plug 'jbyuki/one-small-step-for-vimkind'
 Plug 'mfussenegger/nvim-dap'
 Plug 'echasnovski/mini.statusline'
 Plug 'zhoupro/neovim-lua-debug'
-Plug 'Aasim-A/scrollEOF.nvim'
 call plug#end()
 ]]
 require('mini.statusline').setup()
-require('scrollEOF').setup()
 vim.api.nvim_set_keymap('n', '<C-p>', ':Files<CR>', { noremap = true, silent = true })
 local dap = require"dap"
 dap.configurations.lua = { 

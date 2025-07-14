@@ -24,4 +24,3 @@ function y() {
 	rm -f -- "$tmp"
 }
 trap "" SIGTSTP
-eval "$(lua $HOME/dotfiles/z.lua --init bash)"

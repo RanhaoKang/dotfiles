@@ -22,22 +22,25 @@ opt.foldlevel = 4
 opt.pumheight = 7
 
 opt.completeopt = { 'menuone', 'noinsert', 'fuzzy' }
--- vim.cmd[[set completeopt+=menuone,noselect,popup]]
 
 -- Mapping --
 vim.api.nvim_set_keymap('n', 'H', '<C-w>h', { noremap = true, silent = true })
 vim.api.nvim_set_keymap('n', 'L', '<C-w>l', { noremap = true, silent = true })
 vim.api.nvim_set_keymap("i", "<Tab>", 'pumvisible() ? "<C-y>" : "<Tab>"', { expr = true })
 local map = vim.keymap.set
-map({"n", "v"}, "x", "_x")
 map("i", "<>", "<><left>", { desc = "Enter into angled brackets" })
 map("i", "()", "()<left>", { desc = "Enter into round brackets" })
 map("i", "()<CR>", "()<CR>", { desc = "Enter into round brackets" })
+map("i", "().", "().", { desc = "Enter into round brackets" })
+map("i", "():", "():", { desc = "Enter into round brackets" })
 map("i", "{}", "{}<left>", { desc = "Enter into curly brackets" })
 map("i", "[]", "[]<left>", { desc = "Enter into square brackets" })
 map("i", '""', '""<left>', { desc = "Enter into double quotes" })
 map("i", "''", "''<left>", { desc = "Enter into single quotes" })
 map("i", "``", "``<left>", { desc = "Enter into backticks" })
+map("i", "jk", "<ESC>", { desc = "Enter into backticks" })
+map("v", ">", ">gv")
+map("v", "<", "<gv")
 
 -- LSP --
 vim.lsp.config['luals'] = {
@@ -116,9 +119,11 @@ Plug 'jbyuki/one-small-step-for-vimkind'
 Plug 'mfussenegger/nvim-dap'
 Plug 'echasnovski/mini.statusline'
 Plug 'zhoupro/neovim-lua-debug'
+Plug 'Aasim-A/scrollEOF.nvim'
 call plug#end()
 ]]
 require('mini.statusline').setup()
+require('scrollEOF').setup()
 vim.api.nvim_set_keymap('n', '<C-p>', ':Files<CR>', { noremap = true, silent = true })
 local dap = require"dap"
 dap.configurations.lua = { 

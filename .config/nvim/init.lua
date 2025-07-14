@@ -25,7 +25,13 @@ opt.scrolloff = 5
 opt.completeopt = { 'menuone', 'noinsert', 'fuzzy' }
 
 -- Mapping --
+local opts = { noremap = true, silent = true }
+vim.keymap.set("n",    "<Tab>",         ">>",  opts)
+vim.keymap.set("n",    "<S-Tab>",       "<<",  opts)
+vim.keymap.set("v",    "<Tab>",         ">gv", opts)
+vim.keymap.set("v",    "<S-Tab>",       "<gv", opts)
 vim.api.nvim_set_keymap("i", "<Tab>", 'pumvisible() ? "<C-y>" : "<Tab>"', { expr = true })
+vim.api.nvim_set_keymap("i", "<S-Tab>", 'pumvisible() ? "<C-n>" : "<C-d>"', { expr = true })
 local map = vim.keymap.set
 map('n', 'H', '^')
 map('n', 'L', '$')

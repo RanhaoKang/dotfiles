@@ -32,6 +32,7 @@ local map = vim.keymap.set
 map({"n", "v"}, "x", "_x")
 map("i", "<>", "<><left>", { desc = "Enter into angled brackets" })
 map("i", "()", "()<left>", { desc = "Enter into round brackets" })
+map("i", "()<CR>", "()<CR>", { desc = "Enter into round brackets" })
 map("i", "{}", "{}<left>", { desc = "Enter into curly brackets" })
 map("i", "[]", "[]<left>", { desc = "Enter into square brackets" })
 map("i", '""', '""<left>', { desc = "Enter into double quotes" })

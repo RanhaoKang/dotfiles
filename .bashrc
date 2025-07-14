@@ -24,3 +24,5 @@ function y() {
 	rm -f -- "$tmp"
 }
 trap "" SIGTSTP
+alias vvi='xargs -o nvim'
+

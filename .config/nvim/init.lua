@@ -31,6 +31,13 @@ map('n', 'H', '^')
 map('n', 'L', '$')
 map('n', 'J', '20j')
 map('n', 'K', '20k')
+map('i', '<C-h>', '<LEFT>')
+map('i', '<C-l>', '<RIGHT>')
+
+map('n', '<C-h>', '<C-w>h')
+map('n', '<C-l>', '<C-w>l')
+map('n', '<C-j>', '<C-w>j')
+map('n', '<C-k>', '<C-w>k')
 map("i", "<>", "<><left>", { desc = "Enter into angled brackets" })
 map("i", "()", "()<left>", { desc = "Enter into round brackets" })
 map("i", "()<CR>", "()<CR>", { desc = "Enter into round brackets" })
@@ -121,11 +128,16 @@ Plug 'jbyuki/one-small-step-for-vimkind'
 Plug 'mfussenegger/nvim-dap'
 Plug 'echasnovski/mini.statusline'
 Plug 'zhoupro/neovim-lua-debug'
+Plug 'mg979/vim-visual-multi', {'branch': 'master'}
 call plug#end()
 ]]
 require('mini.statusline').setup()
+vim.g.VM_maps = {
+    ["Find Under"] = "<C-d>"
+}
 vim.api.nvim_set_keymap('n', '<C-p>', ':Files<CR>', { noremap = true, silent = true })
-local dap = require"dap"
+
+local dap = require 'dap' 
 dap.configurations.lua = { 
   { 
     type = 'nlua', 
@@ -133,7 +145,6 @@ dap.configurations.lua = {
     name = "Attach to running Neovim instance",
   }
 }
-
 dap.adapters.nlua = function(callback, config)
   callback({ type = 'server', host = config.host or "127.0.0.1", port = config.port or 8086 })
 end

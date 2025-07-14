@@ -25,11 +25,17 @@ opt.completeopt = { 'menuone', 'noinsert', 'fuzzy' }
 -- vim.cmd[[set completeopt+=menuone,noselect,popup]]
 
 -- Mapping --
-vim.api.nvim_set_keymap('n', 'H', '<C-w>h', { noremap = true, silent = true })
-vim.api.nvim_set_keymap('n', 'L', '<C-w>l', { noremap = true, silent = true })
+vim.api.nvim_set_keymap('n', '<C-h>', '<C-w>h', { noremap = true, silent = true })
+vim.api.nvim_set_keymap('n', '<C-l>', '<C-w>l', { noremap = true, silent = true })
+vim.api.nvim_set_keymap('n', '<C-j>', '<C-w>j', { noremap = true, silent = true })
+vim.api.nvim_set_keymap('n', '<C-k>', '<C-w>k', { noremap = true, silent = true })
 vim.api.nvim_set_keymap("i", "<Tab>", 'pumvisible() ? "<C-y>" : "<Tab>"', { expr = true })
 local map = vim.keymap.set
 map({"n", "v"}, "x", "_x")
+map({"n"}, "J", "10j")
+map({"n"}, "K", "10k")
+map({"n"}, "H", "^")
+map({"n"}, "L", "$")
 map("i", "<>", "<><left>", { desc = "Enter into angled brackets" })
 map("i", "()", "()<left>", { desc = "Enter into round brackets" })
 map("i", "{}", "{}<left>", { desc = "Enter into curly brackets" })
@@ -84,8 +90,8 @@ vim.api.nvim_create_autocmd('LspAttach', {
   end,
 })
 
-vim.api.nvim_set_keymap('n', 'KK', ':vsplit<CR>:LspGotoDefinition<CR>', { noremap = true, silent = true })
-map("n", "K", vim.lsp.buf.hover, { desc = "Hover" })
+vim.api.nvim_set_keymap('n', '<leader>KK', ':vsplit<CR>:LspGotoDefinition<CR>', { noremap = true, silent = true })
+map("n", "<leader>K", vim.lsp.buf.hover, { desc = "Hover" })
 
 function FindMe()
     local command = 'fd --type f ' .. vim.fn.expand('<cword>') .. ' | grep -v meta | grep lua'
@@ -100,7 +106,7 @@ function FindMe()
 end
 
 -- 设置 KKK 键映射
-vim.api.nvim_set_keymap('n', 'KKK', ':lua FindMe()<CR>', { noremap = true, silent = true })
+vim.api.nvim_set_keymap('n', '<leader>KKK', ':lua FindMe()<CR>', { noremap = true, silent = true })
 
 
 -- Plugins --

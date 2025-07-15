@@ -20,30 +20,43 @@ opt.smartcase = true
 opt.foldmethod = "indent"
 opt.foldlevel = 4
 opt.pumheight = 7
+opt.scrolloff = 5
 
 opt.completeopt = { 'menuone', 'noinsert', 'fuzzy' }
--- vim.cmd[[set completeopt+=menuone,noselect,popup]]
 
 -- Mapping --
-vim.api.nvim_set_keymap('n', '<C-h>', '<C-w>h', { noremap = true, silent = true })
-vim.api.nvim_set_keymap('n', '<C-l>', '<C-w>l', { noremap = true, silent = true })
-vim.api.nvim_set_keymap('n', '<C-j>', '<C-w>j', { noremap = true, silent = true })
-vim.api.nvim_set_keymap('n', '<C-k>', '<C-w>k', { noremap = true, silent = true })
+local opts = { noremap = true, silent = true }
+vim.keymap.set("n",    "<Tab>",         ">>",  opts)
+vim.keymap.set("n",    "<S-Tab>",       "<<",  opts)
+vim.keymap.set("v",    "<Tab>",         ">gv", opts)
+vim.keymap.set("v",    "<S-Tab>",       "<gv", opts)
 vim.api.nvim_set_keymap("i", "<Tab>", 'pumvisible() ? "<C-y>" : "<Tab>"', { expr = true })
+vim.api.nvim_set_keymap("i", "<S-Tab>", 'pumvisible() ? "<C-n>" : "<C-d>"', { expr = true })
 local map = vim.keymap.set
-map({"n", "v"}, "x", "_x")
-map({"n"}, "J", "10j")
-map({"n"}, "K", "10k")
-map({"n"}, "H", "^")
-map({"n"}, "L", "$")
+map('n', 'H', '^')
+map('n', 'L', '$')
+map('n', 'J', '20j')
+map('n', 'K', '20k')
+map('i', '<C-h>', '<LEFT>')
+map('i', '<C-l>', '<RIGHT>')
+
+map('n', '<C-h>', '<C-w>h')
+map('n', '<C-l>', '<C-w>l')
+map('n', '<C-j>', '<C-w>j')
+map('n', '<C-k>', '<C-w>k')
 map("i", "<>", "<><left>", { desc = "Enter into angled brackets" })
 map("i", "()", "()<left>", { desc = "Enter into round brackets" })
 map("i", "()<CR>", "()<CR>", { desc = "Enter into round brackets" })
+map("i", "().", "().", { desc = "Enter into round brackets" })
+map("i", "():", "():", { desc = "Enter into round brackets" })
 map("i", "{}", "{}<left>", { desc = "Enter into curly brackets" })
 map("i", "[]", "[]<left>", { desc = "Enter into square brackets" })
 map("i", '""', '""<left>', { desc = "Enter into double quotes" })
 map("i", "''", "''<left>", { desc = "Enter into single quotes" })
 map("i", "``", "``<left>", { desc = "Enter into backticks" })
+map("i", "jk", "<ESC>", { desc = "Enter into backticks" })
+map("v", ">", ">gv")
+map("v", "<", "<gv")
 
 -- LSP --
 vim.lsp.config['luals'] = {
@@ -91,8 +104,7 @@ vim.api.nvim_create_autocmd('LspAttach', {
   end,
 })
 
-vim.api.nvim_set_keymap('n', '<leader>KK', ':vsplit<CR>:LspGotoDefinition<CR>', { noremap = true, silent = true })
-map("n", "<leader>K", vim.lsp.buf.hover, { desc = "Hover" })
+vim.api.nvim_set_keymap('n', '<leader>kk', ':vsplit<CR>:LspGotoDefinition<CR>', { noremap = true, silent = true })
 
 function FindMe()
     local command = 'fd --type f ' .. vim.fn.expand('<cword>') .. ' | grep -v meta | grep lua'
@@ -107,7 +119,7 @@ function FindMe()
 end
 
 -- 设置 KKK 键映射
-vim.api.nvim_set_keymap('n', '<leader>KKK', ':lua FindMe()<CR>', { noremap = true, silent = true })
+vim.api.nvim_set_keymap('n', '<leader>kkk', ':lua FindMe()<CR>', { noremap = true, silent = true })
 
 
 -- Plugins --
@@ -122,11 +134,16 @@ Plug 'jbyuki/one-small-step-for-vimkind'
 Plug 'mfussenegger/nvim-dap'
 Plug 'echasnovski/mini.statusline'
 Plug 'zhoupro/neovim-lua-debug'
+Plug 'mg979/vim-visual-multi', {'branch': 'master'}
 call plug#end()
 ]]
 require('mini.statusline').setup()
+vim.g.VM_maps = {
+    ["Find Under"] = "<C-d>"
+}
 vim.api.nvim_set_keymap('n', '<C-p>', ':Files<CR>', { noremap = true, silent = true })
-local dap = require"dap"
+
+local dap = require 'dap' 
 dap.configurations.lua = { 
   { 
     type = 'nlua', 
@@ -134,7 +151,6 @@ dap.configurations.lua = {
     name = "Attach to running Neovim instance",
   }
 }
-
 dap.adapters.nlua = function(callback, config)
   callback({ type = 'server', host = config.host or "127.0.0.1", port = config.port or 8086 })
 end

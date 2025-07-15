@@ -6,7 +6,8 @@
   padding: 0;
 }
 #waybar {
-  background: #1e222a;
+  /* background: #1e222a; */
+  background: #000000;
   color: #eeeeef;
   font-size: 14px;
   font-family: "Hack Nerd Font";

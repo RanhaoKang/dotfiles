@@ -154,6 +154,49 @@ dap.configurations.lua = {
 dap.adapters.nlua = function(callback, config)
   callback({ type = 'server', host = config.host or "127.0.0.1", port = config.port or 8086 })
 end
+
+
+-- todo --
+do
+local function highlight_lines()
+    local buf = 0  -- Current buffer
+    local ns_id = vim.api.nvim_create_namespace("TodoHighlight")
+    vim.api.nvim_buf_clear_namespace(buf, ns_id, 0, -1)  -- Clear previous highlights
+
+    for i = 1, vim.api.nvim_buf_line_count(buf) do
+        local line = vim.fn.getline(i)
+        if line:match("^%s*%[x%]") then
+            vim.api.nvim_set_hl(0, 'TodoDone', { fg = '#000000', bg = '#B3F6C0', underline = false })
+            vim.api.nvim_set_hl(0, 'TodoDone', { fg = '#B3F6C0', underline = false })
+            vim.api.nvim_buf_add_highlight(buf, ns_id, 'TodoDone', i - 1, 0, -1)
+        end
+    end
+end
+
+local function toggle_todo()
+    local line = vim.fn.getline('.')
+    if line:match("^%s*%[%s*%]") then
+        line = line:gsub("%[%s*%]", "[x]")
+    elseif line:match("^%s*%[x%]") then
+        line = line:gsub("%[x%]", "[ ]")
+    else
+        return
+    end
+    vim.fn.setline('.', line)
+
+    highlight_lines()
+end
+
+vim.api.nvim_create_autocmd("BufEnter", {
+    pattern = "TODO",
+    callback = function()
+        opt.spell = false
+        map('n', '<space>', toggle_todo)
+        highlight_lines()
+    end
+})
+end
+
 ----[[
 
 -- Experiment --

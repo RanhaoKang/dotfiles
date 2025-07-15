@@ -2,7 +2,7 @@
 export GOOGLE_CLOUD_PROJECT=''
 export GEMINI_API_KEY=''
 export https_proxy=http://127.0.0.1:7897 http_proxy=http://127.0.0.1:7897 all_proxy=socks5://127.0.0.1:7897
-export PATH='$HOME/dotfiles/bin/':$PATH
+export PATH="$HOME/dotfiles/bin/":$PATH
 export EDITOR=nvim
 export BROWSER=firefox
 export TERMINAL=foot

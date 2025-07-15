@@ -1,0 +1,13 @@
+#!/bin/bash
+
+# Function to confirm action
+confirm() {
+    read -p "Are you sure you want to proceed? (Y/n): " response
+    case "$response" in
+        [Yy]* ) return 0;;  # Proceed with command2
+        [Nn]* ) echo "Operation cancelled." && return 1;;  # Cancel operation
+        * ) echo "Please answer Y or n." && confirm;;  # Invalid input, ask again
+    esac
+}
+
+confirm

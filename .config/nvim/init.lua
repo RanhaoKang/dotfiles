@@ -168,6 +168,7 @@ local function highlight_lines()
         if line:match("^%s*%[x%]") then
             vim.api.nvim_set_hl(0, 'TodoDone', { fg = '#000000', bg = '#B3F6C0', underline = false })
             vim.api.nvim_set_hl(0, 'TodoDone', { fg = '#B3F6C0', underline = false })
+            vim.api.nvim_set_hl(0, 'TodoDone', { fg = '#555555', underline = false })
             vim.api.nvim_buf_add_highlight(buf, ns_id, 'TodoDone', i - 1, 0, -1)
         end
     end

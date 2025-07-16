@@ -58,7 +58,8 @@
       }
     },
     "network": {
-      "interface": "enp34s0",
+      // "interface": "enp34s0",
+      "interface": "*",
       "tooltip-format-ethernet": "{ifname} ",
       "interval": 2,
       "format": " {bandwidthDownBits}  {bandwidthUpBits}",

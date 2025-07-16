@@ -1,7 +1,7 @@
 # dotfiles
 
 - OS: [Arch Linux](https://archlinux.org/)
-- Compositor: [Hyprland](https://github.com/hyprwm/Hyprland)
+- Compositor: [CwC](https://github.com/Cudiph/cwcwm)
 - Status Bar: [Waybar](https://github.com/Alexays/Waybar)
 - Launcher: [Fuzzel]()
 - Wallpaper: [swaybg]()

@@ -141,8 +141,11 @@ Plug 'echasnovski/mini.statusline'
 Plug 'zhoupro/neovim-lua-debug'
 Plug 'mg979/vim-visual-multi', {'branch': 'master'}
 Plug 'nvim-zh/colorful-winsep.nvim'
+Plug 'numToStr/Comment.nvim'
+Plug 'sitiom/nvim-numbertoggle'
 call plug#end()
 ]]
+require('Comment').setup()
 require('mini.statusline').setup()
 vim.g.VM_maps = {
     ["Find Under"] = "<C-d>"

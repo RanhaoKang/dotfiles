@@ -38,10 +38,9 @@ cwc.kbd.set_repeat_delay(300)
 cwc.kbd.xkb_options = "grp:ctrl_shift_toggle"
 
 -- client config
-cwc.client.set_border_color_focus(gears.color(
-    "linear:0,0:0,0:0,#f08e97:0.1,#a7e1a4:0.2,#ffffa7:0.3,#a5c0e1:0.4,#c8a6e1:0.5,#a1d0d4:0.6,#f9b486:0.7,#e1a5d7:0.8,#b4b8e6:0.9,#b4b8e6:1.0,#f8e0b4"))
+cwc.client.set_border_color_focus(gears.color('#B3F6C0'))
 cwc.client.set_border_color_normal(gears.color("#423e44"))
-cwc.client.set_border_width(1)
+cwc.client.set_border_width(2)
 cwc.client.set_border_color_rotation(64)
 
 -- screen/tag config
@@ -72,20 +71,20 @@ cwc.tasklist_show_all = false
 ------------------------------- SCREEN SETUP ------------------------------------
 cwc.connect_signal("screen::new", function(screen)
     -- screen settings
-    if screen.name == "DP-1" then
-        screen:set_position(0, 0)
+    if screen.name == "DP-2" then
+        screen:set_position(1920, 0)
 
         screen:set_mode(1920, 1080, 60) -- width, height, refresh rate
         screen:set_adaptive_sync(true)
-        screen:set_scale(1.2)
+        screen:set_scale(1)
         screen:set_transform(enum.output_transform.TRANSFORM_NORMAL)
 
         -- by default the screen is not allowed to tear
         screen.allow_tearing = true
     end
 
-    if screen.name == "DP-2" then
-        screen:set_position(1920, 0)
+    if screen.name == "DVI-D-1" then
+        screen:set_position(0, 0)
     end
 
     -- don't apply if restored since it will reset whats manually changed
@@ -97,14 +96,8 @@ cwc.connect_signal("screen::new", function(screen)
     end
 
     -- set workspace 2, 8, and 9 to floating mode
-    tag.layout_mode(2, enum.layout_mode.FLOATING, screen)
-    tag.layout_mode(8, enum.layout_mode.FLOATING, screen)
-    tag.layout_mode(9, enum.layout_mode.FLOATING, screen)
 
     -- set workspace 4, 5, 6 to bsp mode
-    tag.layout_mode(4, enum.layout_mode.BSP, screen)
-    tag.layout_mode(5, enum.layout_mode.BSP, screen)
-    tag.layout_mode(6, enum.layout_mode.BSP, screen)
 end)
 
 -- cwc.connect_signal("screen::destroy", function(screen)
@@ -139,6 +132,9 @@ cwc.connect_signal("client::map", function(client)
     if client.appid == "firefox" then
         client:move_to_tag(2)
         client.screen.active_workspace = 2
+    elseif client.title == "yua-modal" then
+        client.floating = true
+        client:center()
     end
 
     if client.appid:match("pcmanfm") then

@@ -56,7 +56,7 @@ map(MODKEY, "q", function()
     if c then c:close() end
 end, { description = "close client respectfully", group = "client" })
 
-kbd.bind({ MODKEY, mod.CTRL }, "q", function()
+map({ MODKEY, mod.CTRL }, "q", function()
     local c = cwc.client.focused()
     if c then c:kill() end
 end, { description = "close client forcefully", group = "client" })
@@ -71,45 +71,45 @@ map(MODKEY, "f", function()
     if c then c.maximized = not c.maximized end
 end, { description = "toggle maximize", group = "client" })
 
-kbd.bind({ MODKEY, mod.SHIFT }, "m", function()
+map({ MODKEY, mod.SHIFT }, "m", function()
     cful.client.maximize_vertical()
 end, { description = "maximize vertically", group = "client" })
 
-kbd.bind({ MODKEY, mod.CTRL }, "m", function()
+map({ MODKEY, mod.CTRL }, "m", function()
     cful.client.maximize_horizontal()
 end, { description = "maximize horizontally", group = "client" })
 
-kbd.bind({ MODKEY, mod.SHIFT }, "space", function()
+map({ MODKEY, mod.SHIFT }, "space", function()
     local c = cwc.client.focused()
     if c then c.floating = not c.floating end
 end, { description = "toggle floating", group = "client" })
 
-kbd.bind(MODKEY, "n", function()
+map(MODKEY, "n", function()
     local c = cwc.client.focused()
     if c then c.minimized = true end
 end, { description = "minimize client", group = "client" })
 
-kbd.bind({ MODKEY, mod.CTRL }, "n", function()
+map({ MODKEY, mod.CTRL }, "n", function()
     local c = cful.client.restore(true)
     if c then c:focus() end
 end, { description = "restore minimized client", group = "client" })
 
-kbd.bind({ MODKEY }, "o", function()
+map({ MODKEY }, "o", function()
     local c = cwc.client.focused()
     if c then c.ontop = not c.ontop end
 end, { description = "toggle client always on top", group = "client" })
 
-kbd.bind({ MODKEY }, "i", function()
+map({ MODKEY }, "i", function()
     local c = cwc.client.focused()
     if c then c.above = not c.above end
 end, { description = "toggle client above normal toplevel", group = "client" })
 
-kbd.bind({ MODKEY }, "u", function()
+map({ MODKEY }, "u", function()
     local c = cwc.client.focused()
     if c then c.below = not c.below end
 end, { description = "toggle client under normal toplevel", group = "client" })
 
-kbd.bind({ MODKEY, mod.CTRL }, "0", function()
+map({ MODKEY, mod.CTRL }, "0", function()
     local c = cwc.client.focused()
     if c then c.sticky = not c.sticky end
 end, { description = "toggle client always visible", group = "client" })
@@ -447,8 +447,8 @@ kbd.bind({ MODKEY }, "Print", function()
     cwc.spawn_with_shell("flameshot full")
 end, { description = "screenshot entire screen", group = "launcher" })
 kbd.bind({ MODKEY, mod.SHIFT }, "s", function()
-    cwc.spawn_with_shell("flameshot gui")
-    -- cwc.spawn_with_shell('slurp | grim -g - - | copyq write image/png - && copyq select 0')
+    -- cwc.spawn_with_shell("flameshot gui")
+    cwc.spawn_with_shell('slurp | grim -g - - | copyq write image/png - && copyq select 0')
 end, { description = "snipping tool", group = "launcher" })
 kbd.bind(MODKEY, "v", function()
     cwc.spawn_with_shell("copyq toggle")

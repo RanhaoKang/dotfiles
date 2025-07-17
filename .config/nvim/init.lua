@@ -30,6 +30,7 @@ vim.keymap.set("n",    "<Tab>",         ">>",  opts)
 vim.keymap.set("n",    "<S-Tab>",       "<<",  opts)
 vim.keymap.set("v",    "<Tab>",         ">gv", opts)
 vim.keymap.set("v",    "<S-Tab>",       "<gv", opts)
+vim.keymap.set("n",    "<C-t>",       ":NERDTreeToggle<CR>", opts)
 vim.api.nvim_set_keymap("i", "<Tab>", 'pumvisible() ? "<C-y>" : "<Tab>"', { expr = true })
 vim.api.nvim_set_keymap("i", "<S-Tab>", 'pumvisible() ? "<C-n>" : "<C-d>"', { expr = true })
 local map = vim.keymap.set
@@ -37,8 +38,12 @@ map('n', 'H', '^')
 map('n', 'L', '$')
 map('n', 'J', '20j')
 map('n', 'K', '20k')
-map('i', '<C-h>', '<LEFT>')
-map('i', '<C-l>', '<RIGHT>')
+map('i', '<C-H>', '<LEFT>')
+map('i', '<C-L>', '<RIGHT>')
+map('i', '<C-J>', '<DOWN>')
+map('i', '<C-K>', '<UP>')
+map('i', '<C-S-H>', '<ESC>^i')
+map('i', '<C-S-L>', '<ESC>$i')
 
 map('n', '<C-h>', '<C-w>h')
 map('n', '<C-l>', '<C-w>l')
@@ -135,6 +140,7 @@ Plug 'mfussenegger/nvim-dap'
 Plug 'echasnovski/mini.statusline'
 Plug 'zhoupro/neovim-lua-debug'
 Plug 'mg979/vim-visual-multi', {'branch': 'master'}
+Plug 'nvim-zh/colorful-winsep.nvim'
 call plug#end()
 ]]
 require('mini.statusline').setup()
@@ -142,6 +148,11 @@ vim.g.VM_maps = {
     ["Find Under"] = "<C-d>"
 }
 vim.api.nvim_set_keymap('n', '<C-p>', ':Files<CR>', { noremap = true, silent = true })
+
+require('colorful-winsep').setup {
+    hi = { bg = '#16161E', fg = '#B3F6C0' },
+    smooth = false,
+}
 
 local dap = require 'dap' 
 dap.configurations.lua = { 

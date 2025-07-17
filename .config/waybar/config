@@ -15,6 +15,8 @@
       "temperature",
       "memory",
       "cpu",
+      "custom/ddc-dark",
+      "custom/ddc-light",
       "pulseaudio",
       "custom/powermenu",
     ],
@@ -78,6 +80,14 @@
       "format": " {usage}%",
       "tooltip": "false"
     },
+    "custom/ddc-dark": {
+        "format": "D",
+        "on-click": "exec sh -c 'ddcutil --display 1 setvcp 10 1; ddcutil --display 2 setvcp 10 1'"
+    },
+    "custom/ddc-light": {
+        "format": "L",
+        "on-click": "exec sh -c 'ddcutil --display 1 setvcp 10 100; ddcutil --display 2 setvcp 10 100'"
+    },
     "custom/powermenu": {
       "format": "",
       "tooltip": false,
@@ -97,7 +107,6 @@
           "default": ["", ""]
       },
       "scroll-step": 1,
-      "on-click": "pavucontrol"
     },
     "clock": {
       //"format": "<span color=\"#56b6c2\"></span> {:%H:%M}",

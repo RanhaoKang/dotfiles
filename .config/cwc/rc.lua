@@ -54,7 +54,7 @@ end
 
 -- input device config
 cwc.connect_signal("input::new", function(dev)
-    dev.sensitivity   = -0.75
+    dev.sensitivity   = 0.5
     dev.accel_profile = enum.libinput.ACCEL_PROFILE_FLAT
 
     if dev.name:lower():match("touchpad") then

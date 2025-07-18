@@ -84,12 +84,12 @@ map({ MODKEY, mod.SHIFT }, "space", function()
     if c then c.floating = not c.floating end
 end, { description = "toggle floating", group = "client" })
 
-map(MODKEY, "n", function()
+map(MODKEY, "F11", function()
     local c = cwc.client.focused()
     if c then c.minimized = true end
 end, { description = "minimize client", group = "client" })
 
-map({ MODKEY, mod.CTRL }, "n", function()
+map({ MODKEY, mod.CTRL }, "F11", function()
     local c = cful.client.restore(true)
     if c then c:focus() end
 end, { description = "restore minimized client", group = "client" })

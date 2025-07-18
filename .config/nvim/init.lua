@@ -2,6 +2,7 @@
 local opt = vim.opt
 opt.encoding = 'utf-8'
 opt.number = true
+opt.relativenumber = true
 opt.clipboard = 'unnamedplus'
 opt.background = 'dark'
 opt.termguicolors = true
@@ -54,14 +55,17 @@ map("i", "()", "()<left>", { desc = "Enter into round brackets" })
 map("i", "()<CR>", "()<CR>", { desc = "Enter into round brackets" })
 map("i", "().", "().", { desc = "Enter into round brackets" })
 map("i", "():", "():", { desc = "Enter into round brackets" })
+map("i", "()<Space>", "()<Space>", { desc = "Enter into round brackets" })
 map("i", "{}", "{}<left>", { desc = "Enter into curly brackets" })
 map("i", "[]", "[]<left>", { desc = "Enter into square brackets" })
 map("i", '""', '""<left>', { desc = "Enter into double quotes" })
+map("i", '""<CR>', '""<CR>', { desc = "Enter into double quotes" })
 map("i", "''", "''<left>", { desc = "Enter into single quotes" })
 map("i", "``", "``<left>", { desc = "Enter into backticks" })
 map("i", "jk", "<ESC>", { desc = "Enter into backticks" })
 map("v", ">", ">gv")
 map("v", "<", "<gv")
+map("n", "<C-/>", "gcc")
 
 -- LSP --
 vim.lsp.config['luals'] = {

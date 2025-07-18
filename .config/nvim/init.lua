@@ -147,10 +147,12 @@ Plug 'mg979/vim-visual-multi', {'branch': 'master'}
 Plug 'nvim-zh/colorful-winsep.nvim'
 Plug 'numToStr/Comment.nvim'
 Plug 'sitiom/nvim-numbertoggle'
+Plug 'mireq/large_file'
 call plug#end()
 ]]
 require('Comment').setup()
 require('mini.statusline').setup()
+require("large_file").setup()
 vim.g.VM_maps = {
     ["Find Under"] = "<C-d>"
 }

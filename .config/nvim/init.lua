@@ -150,10 +150,12 @@ Plug 'echasnovski/mini.statusline'
 Plug 'zhoupro/neovim-lua-debug'
 Plug 'mg979/vim-visual-multi', {'branch': 'master'}
 Plug 'nvim-zh/colorful-winsep.nvim'
+
 Plug 'numToStr/Comment.nvim'
 Plug 'sitiom/nvim-numbertoggle'
 Plug 'mireq/large_file'
 Plug 'ggandor/leap.nvim'
+Plug 'xubury/emmylua.nvim'
 call plug#end()
 ]]
 -- ; Plug 'justinmk/vim-sneak'
@@ -174,17 +176,27 @@ require('colorful-winsep').setup {
     smooth = false,
 }
 
-local dap = require 'dap' 
-dap.configurations.lua = { 
-  { 
-    type = 'nlua', 
-    request = 'attach',
-    name = "Attach to running Neovim instance",
-  }
+local emmylua = require 'emmylua'
+local dap = require 'dap'
+dap.adapters.lua = emmylua.get_attach_adapter()
+dap.configurations.lua = {
+    {
+        type        = "lua",
+        request     = "launch",
+        name        = "🐛 EmmyLua Debug Session",
+        host        = "localhost",
+        port        = 9966,
+        sourcePaths = {
+                        "${workspaceFolder}"
+        },
+        ext         = {
+                        ".lua",
+                        ".lua.txt",
+                        ".lua.bytes"
+        },
+        ideConnectDebugger = true,
+    }
 }
-dap.adapters.nlua = function(callback, config)
-  callback({ type = 'server', host = config.host or "127.0.0.1", port = config.port or 8086 })
-end
 
 
 -- todo --

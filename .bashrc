@@ -35,3 +35,5 @@ function vi() {
     fi
 }
 
+. ~/dotfiles/extract.sh
+

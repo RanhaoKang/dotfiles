@@ -155,7 +155,6 @@ Plug 'numToStr/Comment.nvim'
 Plug 'sitiom/nvim-numbertoggle'
 Plug 'mireq/large_file'
 Plug 'ggandor/leap.nvim'
-Plug 'xubury/emmylua.nvim'
 call plug#end()
 ]]
 -- ; Plug 'justinmk/vim-sneak'
@@ -170,15 +169,14 @@ vim.g.VM_maps = {
     ["Find Under"] = "<C-d>"
 }
 vim.api.nvim_set_keymap('n', '<C-p>', ':Files<CR>', { noremap = true, silent = true })
+vim.api.nvim_set_keymap('n', '<C-S-p>', ':RG<CR>', { noremap = true, silent = true })
 
 require('colorful-winsep').setup {
     hi = { bg = '#16161E', fg = '#B3F6C0' },
     smooth = false,
 }
 
-local emmylua = require 'emmylua'
 local dap = require 'dap'
-dap.adapters.lua = emmylua.get_attach_adapter()
 dap.configurations.lua = {
     {
         type        = "lua",
@@ -197,6 +195,9 @@ dap.configurations.lua = {
         ideConnectDebugger = true,
     }
 }
+dap.adapters.lua = function(callback, config)
+  callback({ type = 'server', host = config.host or "127.0.0.1", port = config.port or 9966 })
+end
 
 
 -- todo --

@@ -102,6 +102,12 @@ vim.api.nvim_create_autocmd({"BufRead", "BufNewFile"}, {
         vim.opt.filetype = 'lua'
     end
 })
+vim.api.nvim_create_autocmd({"BufRead", "BufNewFile"}, {
+    pattern = {"*.fnl"},
+    callback = function()
+        vim.opt.filetype = 'lisp'
+    end
+})
 vim.api.nvim_create_autocmd('LspAttach', {
   callback = function(ev)
     local client = vim.lsp.get_client_by_id(ev.data.client_id)
@@ -138,7 +144,6 @@ call plug#begin()
 Plug 'preservim/nerdtree'
 Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }
 Plug 'junegunn/fzf.vim'
-Plug 'justinmk/vim-sneak'
 Plug 'jbyuki/one-small-step-for-vimkind'
 Plug 'mfussenegger/nvim-dap'
 Plug 'echasnovski/mini.statusline'
@@ -148,8 +153,14 @@ Plug 'nvim-zh/colorful-winsep.nvim'
 Plug 'numToStr/Comment.nvim'
 Plug 'sitiom/nvim-numbertoggle'
 Plug 'mireq/large_file'
+Plug 'ggandor/leap.nvim'
 call plug#end()
 ]]
+-- ; Plug 'justinmk/vim-sneak'
+require('leap').set_default_mappings()
+vim.keymap.set({'n', 'x', 'o'}, 'f', '<Plug>(leap)')
+vim.keymap.set('n',             'F', '<Plug>(leap-from-window)')
+
 require('Comment').setup()
 require('mini.statusline').setup()
 require("large_file").setup()

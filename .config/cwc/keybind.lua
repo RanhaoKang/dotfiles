@@ -37,10 +37,6 @@ kbd.bind({ MODKEY }, "Delete", function()
     collectgarbage("collect")
 end, { description = "trigger lua garbage collection", group = "cwc" })
 
-kbd.bind({ MODKEY }, "Escape", function()
-    cwc.container.reset_mark();
-end, { description = "reset leftover server state", group = "cwc" })
-
 for i = 1, 12 do
     kbd.bind({ mod.CTRL, mod.ALT }, "F" .. i, function()
         cwc.chvt(i)
@@ -82,6 +78,10 @@ end, { description = "maximize horizontally", group = "client" })
 map({ MODKEY, mod.SHIFT }, "space", function()
     local c = cwc.client.focused()
     if c then c.floating = not c.floating end
+end, { description = "toggle floating", group = "client" })
+
+map({ MODKEY, }, "Escape", function()
+    cwc.spawn_with_shell 'makoctl dismiss'
 end, { description = "toggle floating", group = "client" })
 
 map(MODKEY, "F11", function()

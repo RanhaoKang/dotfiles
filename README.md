@@ -11,4 +11,5 @@
 - Fonts:
 - File Manager:
 - Magic: [Clash Verge Rev](https://github.com/clash-verge-rev/clash-verge-rev/)
+- AUR Helper: [yay]()
 

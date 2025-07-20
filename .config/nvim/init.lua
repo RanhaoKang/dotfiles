@@ -155,6 +155,7 @@ Plug 'numToStr/Comment.nvim'
 Plug 'sitiom/nvim-numbertoggle'
 Plug 'mireq/large_file'
 Plug 'ggandor/leap.nvim'
+Plug 'eraserhd/parinfer-rust'
 call plug#end()
 ]]
 -- ; Plug 'justinmk/vim-sneak'

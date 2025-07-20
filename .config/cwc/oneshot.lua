@@ -14,7 +14,6 @@ cwc.spawn_with_shell(swayidle_cmd)
 
 -- for app that use tray better to wait for the bar to load
 cwc.timer.new(3, function()
-    cwc.spawn { "copyq" }
     cwc.spawn { "fcitx5" }
     cwc.spawn { "clash-verge" }
     cwc.spawn { "aria2tray", "--hide-window" }

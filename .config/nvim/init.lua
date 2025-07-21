@@ -287,12 +287,14 @@ vim.api.nvim_create_autocmd('FileType', {
   callback = function()
     -- Set conceal options for the window
     vim.wo.conceallevel = 2 -- 0:none, 1:conceal in some syntax groups, 2:always
-    vim.wo.concealcursor = 'n' -- show concealed text in normal mode for the cursor line
+    vim.wo.concealcursor = ''
 
-    -- Rule 1: Conceal the 'function' keyword when followed by '()'
-    vim.fn.matchadd('Conceal', '\\vfunction\\ze\\s*\\(', 10, -1, { conceal = '' })
-    -- Rule 2: Conceal the 'end' keyword when it likely closes a lambda
+    -- Rule 2: Conceal the 'function' keyword when followed by '()'
+    -- vim.fn.matchadd('Conceal', '\\vfunction\\ze\\s*\\(', 11, -1, { conceal = '' })
+    -- Rule 3: Conceal the 'end' keyword when it likely closes a lambda
     -- This heuristic matches 'end' followed by ')', '}', or ','
-    vim.fn.matchadd('Conceal', '\function.*\v end\\ze\\s*[,})]', 10, -1, { conceal = '' })
+    -- vim.fn.matchadd('Conceal', '\function.*\v end\\ze\\s*[,})]', 11, -1, { conceal = '' })
+    vim.fn.matchadd('Conceal', '\\<return\\>\\s')
+    vim.fn.matchadd('Conceal', '\\vfunction\\ze\\s*\\(')
   end,
 })

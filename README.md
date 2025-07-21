@@ -17,6 +17,7 @@
 - `hjkl` for direct navigation, `tab`/`<s-tab>` for next/prev navigation
 - tiers:
     - `<super-` for inter-window.
+    - `<super-s-` for moving window.
     - `<c-` for inner-window.
     - `<c-s-` for big moves and when mapping is already used.
     - `<s-` only for inline selection things.

@@ -97,7 +97,7 @@ vim.lsp.config['luals'] = {
 
 vim.lsp.enable('luals')
 vim.api.nvim_create_autocmd({"BufRead", "BufNewFile"}, {
-    pattern = {"*.lua.txt"},
+    pattern = {"*.lua.txt", "*.lua"},
     callback = function()
         vim.opt.filetype = 'lua'
     end
@@ -266,3 +266,23 @@ vim.keymap.set('n', '<leader>df', function()
   local widgets = require"dap.ui.widgets"
   widgets.centered_float(widgets.frames)
 end)
+
+-- Create an autocommand group to prevent stacking duplicate commands
+local augroup = vim.api.nvim_create_augroup('LuaConceal', { clear = true })
+
+-- Create the autocommand for Lua files
+vim.api.nvim_create_autocmd('FileType', {
+  group = augroup,
+  pattern = 'lua',
+  callback = function()
+    -- Set conceal options for the window
+    vim.wo.conceallevel = 2 -- 0:none, 1:conceal in some syntax groups, 2:always
+    vim.wo.concealcursor = 'n' -- show concealed text in normal mode for the cursor line
+
+    -- Rule 1: Conceal the 'function' keyword when followed by '()'
+    vim.fn.matchadd('Conceal', '\\vfunction\\ze\\s*\\(', 10, -1, { conceal = '' })
+    -- Rule 2: Conceal the 'end' keyword when it likely closes a lambda
+    -- This heuristic matches 'end' followed by ')', '}', or ','
+    vim.fn.matchadd('Conceal', '\function.*\v end\\ze\\s*[,})]', 10, -1, { conceal = '' })
+  end,
+})

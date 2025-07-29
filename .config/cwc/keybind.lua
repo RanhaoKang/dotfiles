@@ -277,13 +277,6 @@ local function resize_up()
     local c = cwc.client.focused()
     if not c or not c.floating then return end
 
-    c:resize(size_interval, 0)
-end
-
-local function resize_up()
-    local c = cwc.client.focused()
-    if not c or not c.floating then return end
-
     c:resize(0, -size_interval)
 end
 
@@ -590,7 +583,7 @@ client_map:bind({ mod.SHIFT }, "l", resize_right, resize_right_opt)
 
 -------------------- DEV ------------------------
 kbd.bind({ MODKEY }, "F11", function() --
-    cwc.create_output(2)
+    cwc.create_output(3)
     print(#cwc.screen.get())
 end, { description = "Create output", group = "dev" })
 

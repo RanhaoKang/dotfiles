@@ -94,10 +94,6 @@ cwc.connect_signal("screen::new", function(screen)
     for i = 1, 9 do
         tag.layout_mode(i, enum.layout_mode.MASTER, screen)
     end
-
-    -- set workspace 2, 8, and 9 to floating mode
-
-    -- set workspace 4, 5, 6 to bsp mode
 end)
 
 -- cwc.connect_signal("screen::destroy", function(screen)
@@ -169,14 +165,6 @@ cwc.connect_signal("client::focus", function(client)
     client:raise()
 end)
 
--- sloppic focus only in tiled client
-cwc.connect_signal("client::mouse_enter", function(c)
-    local focused = cwc.client.focused()
-    if focused and focused.floating then return end
-
-    c:focus()
-end)
-
 cwc.connect_signal("container::insert", function(cont, client)
     -- reset mark after first insertion in case forgot to toggle off mark
     cwc.container.reset_mark()
@@ -185,6 +173,3 @@ cwc.connect_signal("container::insert", function(cont, client)
     client:focus()
 end)
 
-cwc.connect_signal("screen::mouse_enter", function(s)
-    s:focus()
-end)

@@ -1,4 +1,5 @@
 -- Core --
+vim.g.mapleader = " "
 local opt = vim.opt
 opt.encoding = 'utf-8'
 opt.number = true
@@ -74,7 +75,7 @@ vim.lsp.config['luals'] = {
   -- Command and arguments to start the server.
   cmd = { 'lua-language-server' },
   -- Filetypes to automatically attach to.
-  filetypes = { 'lua' },
+  filetypes = { 'lua', 'txt' },
   -- Sets the "root directory" to the parent directory of the file in the
   -- current buffer that contains either a ".luarc.json" or a
   -- ".luarc.jsonc" file. Files that share a root directory will reuse
@@ -121,7 +122,7 @@ vim.api.nvim_create_autocmd('LspAttach', {
   end,
 })
 
-vim.api.nvim_set_keymap('n', '<leader>kk', ':vsplit<CR>:LspGotoDefinition<CR>', { noremap = true, silent = true })
+vim.api.nvim_set_keymap('n', '<leader>g', ':cc<CR>', { noremap = true, silent = true })
 
 function FindMe()
     local command = 'fd --type f ' .. vim.fn.expand('<cword>') .. ' | grep -v meta | grep lua'

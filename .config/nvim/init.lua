@@ -1,5 +1,4 @@
 -- Core --
-vim.g.mapleader = " "
 local opt = vim.opt
 opt.encoding = 'utf-8'
 opt.number = true
@@ -122,7 +121,7 @@ vim.api.nvim_create_autocmd('LspAttach', {
   end,
 })
 
-vim.api.nvim_set_keymap('n', '<leader>g', ':cc<CR>', { noremap = true, silent = true })
+vim.api.nvim_set_keymap('n', 'gg', ':cc<CR>', { noremap = true, silent = true })
 
 function FindMe()
     local command = 'fd --type f ' .. vim.fn.expand('<cword>') .. ' | grep -v meta | grep lua'
@@ -137,7 +136,7 @@ function FindMe()
 end
 
 -- 设置 KKK 键映射
-vim.api.nvim_set_keymap('n', '<leader>kkk', ':lua FindMe()<CR>', { noremap = true, silent = true })
+vim.api.nvim_set_keymap('n', 'KKK', ':lua FindMe()<CR>', { noremap = true, silent = true })
 
 
 -- Plugins --
@@ -280,6 +279,57 @@ vim.keymap.set('n', '<leader>df', function()
   widgets.centered_float(widgets.frames)
 end)
 
+local function get_word_before_cursor()
+    local line = vim.fn.getline('.')
+    local col = vim.fn.col('.')  -- Vim columns are 1-based
+    
+    -- Find the last word character before cursor (ignore spaces)
+    local word_end = col
+    while word_end > 1 and line:sub(word_end - 1, word_end - 1):match('%s') do
+        word_end = word_end - 1
+    end
+    
+    local word_start = word_end
+    while word_start > 1 and line:sub(word_start - 1, word_start - 1):match('%w') do
+        word_start = word_start - 1
+    end
+    
+    if word_start <= word_end then
+        return line:sub(word_start, word_end - 1), word_start, word_end
+    end
+    return nil, nil, nil
+end
+
+-- For += mapping: converts 'var' to 'var = var + '
+local function self_add()
+    local variable, start_pos, end_pos = get_word_before_cursor()
+    if not variable or #variable == 0 then return end
+    
+    local line = vim.fn.getline('.')
+    local new_line = line:sub(1, start_pos - 1) 
+                   .. variable .. ' = ' .. variable .. ' + ' 
+                   .. line:sub(end_pos)
+    
+    vim.fn.setline('.', new_line)
+    -- Position cursor after ' + ' (3 characters after variable insertion point)
+    vim.fn.cursor(0, start_pos + #variable + 3 + #variable + 3)
+end
+
+-- For ::a mapping: converts 'var' to 'var[#var + 1] = '
+local function array_add()
+    local variable, start_pos, end_pos = get_word_before_cursor()
+    if not variable or #variable == 0 then return end
+    
+    local line = vim.fn.getline('.')
+    local new_line = line:sub(1, start_pos - 1) 
+                   .. variable .. '[#' .. variable .. ' + 1] = ' 
+                   .. line:sub(end_pos)
+    
+    vim.fn.setline('.', new_line)
+    -- Position cursor after ' = ' (13 characters after variable insertion point)
+    vim.fn.cursor(0, start_pos + #variable + 11 + #variable + 4)
+end
+
 -- Create an autocommand group to prevent stacking duplicate commands
 local augroup = vim.api.nvim_create_augroup('LuaConceal', { clear = true })
 
@@ -299,5 +349,7 @@ vim.api.nvim_create_autocmd('FileType', {
     -- vim.fn.matchadd('Conceal', '\function.*\v end\\ze\\s*[,})]', 11, -1, { conceal = '' })
     vim.fn.matchadd('Conceal', '\\<return\\>\\s')
     vim.fn.matchadd('Conceal', '\\vfunction\\ze\\s*\\(')
+    map('i', '+=', self_add)
+    map('i', '::a', array_add)
   end,
 })

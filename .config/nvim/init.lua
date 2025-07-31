@@ -52,19 +52,15 @@ map('n', '<C-h>', '<C-w>h')
 map('n', '<C-l>', '<C-w>l')
 map('n', '<C-j>', '<C-w>j')
 map('n', '<C-k>', '<C-w>k')
-map("i", "<>", "<><left>", { desc = "Enter into angled brackets" })
-map("i", "()", "()<left>", { desc = "Enter into round brackets" })
-map("i", "()<CR>", "()<CR>", { desc = "Enter into round brackets" })
-map("i", "().", "().", { desc = "Enter into round brackets" })
-map("i", "():", "():", { desc = "Enter into round brackets" })
-map("i", "()<Space>", "()<Space>", { desc = "Enter into round brackets" })
-map("i", "{}", "{}<left>", { desc = "Enter into curly brackets" })
-map("i", "[]", "[]<left>", { desc = "Enter into square brackets" })
-map("i", '""', '""<left>', { desc = "Enter into double quotes" })
-map("i", '""<CR>', '""<CR>', { desc = "Enter into double quotes" })
-map("i", "''", "''<left>", { desc = "Enter into single quotes" })
-map("i", "``", "``<left>", { desc = "Enter into backticks" })
-map("i", "jk", "<ESC>", { desc = "Enter into backticks" })
+
+for _, bracket in ipairs { '()', '<>', '{}', '[]', '""', "''", '``', } do
+    map('i', bracket             , bracket .. '<left>'  , opts)
+    map('i', bracket .. '<CR>'   , bracket .. '<CR>'    , opts)
+    map('i', bracket .. '<Space>', bracket .. '<Space>' , opts)
+    map('i', bracket .. '.'      , bracket .. '.'       , opts)
+    map('i', bracket .. ':'      , bracket .. ':'       , opts)
+end
+
 map("v", ">", ">gv")
 map("v", "<", "<gv")
 map("n", "<C-/>", "gcc")
@@ -90,7 +86,7 @@ vim.lsp.config['luals'] = {
         version = 'Lua5.3',
       },
       completion = {
-        callSnippet = "Replace" -- or "Both" or "None"
+        callSnippet = "None" -- or "Both" or "None"
       }
     }
   },
@@ -135,8 +131,7 @@ function FindMe()
     end
 end
 
--- 设置 KKK 键映射
-vim.api.nvim_set_keymap('n', 'KKK', ':lua FindMe()<CR>', { noremap = true, silent = true })
+vim.api.nvim_set_keymap('n', 'gkk', 'lua FindMe()<CR>', { noremap = true, silent = true })
 
 
 -- Plugins --

@@ -131,6 +131,10 @@ cwc.connect_signal("client::map", function(client)
     elseif client.title == "yua-modal" then
         client.floating = true
         client:center()
+    elseif client.title == "Yua" then
+        client.floating = false
+        client.fullscreen = false
+        client.maximized = false
     end
 
     if client.appid:match("pcmanfm") then

@@ -59,11 +59,13 @@ for _, bracket in ipairs { '()', '<>', '{}', '[]', '""', "''", '``', } do
     map('i', bracket .. '<Space>', bracket .. '<Space>' , opts)
     map('i', bracket .. '.'      , bracket .. '.'       , opts)
     map('i', bracket .. ':'      , bracket .. ':'       , opts)
+    map('i', bracket .. ','      , bracket .. ','       , opts)
 end
 
 map("v", ">", ">gv")
 map("v", "<", "<gv")
 map("n", "<C-/>", "gcc")
+map("n", "tc", ":CccPick<CR>")
 
 -- LSP --
 vim.lsp.config['luals'] = {
@@ -153,8 +155,15 @@ Plug 'sitiom/nvim-numbertoggle'
 Plug 'mireq/large_file'
 Plug 'ggandor/leap.nvim'
 Plug 'eraserhd/parinfer-rust'
+Plug 'uga-rosa/ccc.nvim'
 call plug#end()
 ]]
+require('ccc').setup {
+    highlighter = {
+        auto_enable = true,
+        lsp = true,
+    },
+}
 -- Exclude whitespace and the middle of alphabetic words from preview:
 --   foobar[baaz] = quux
 --   ^----^^^--^^-^-^--^

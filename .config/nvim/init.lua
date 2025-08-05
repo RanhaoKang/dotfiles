@@ -11,7 +11,7 @@ opt.shiftwidth = 4
 opt.expandtab = true
 opt.smartindent = true
 opt.wrap = false
--- opt.spell = true
+-- opt.spell = 
 -- opt.spelllang = { 'en' }
 opt.undofile = true
 opt.backup = false
@@ -47,6 +47,9 @@ map('i', '<C-S-H>', '<ESC>^i')
 map('i', '<C-S-L>', '<ESC>$i')
 map('i', '<C-O>', '<ESC>o')
 map('i', '<C-S-O>', '<ESC>O')
+vim.api.nvim_create_user_command('Make ui', ':!cat scripts/dev/template/ui.lua >> %', {
+    nargs = 1,
+})
 
 map('n', '<C-h>', '<C-w>h')
 map('n', '<C-l>', '<C-w>l')
@@ -357,3 +360,4 @@ vim.api.nvim_create_autocmd('FileType', {
     map('i', '::a', array_add)
   end,
 })
+

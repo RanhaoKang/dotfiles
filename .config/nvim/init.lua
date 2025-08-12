@@ -159,8 +159,23 @@ Plug 'mireq/large_file'
 Plug 'ggandor/leap.nvim'
 Plug 'eraserhd/parinfer-rust'
 Plug 'uga-rosa/ccc.nvim'
+Plug 'Vonr/align.nvim'
 call plug#end()
 ]]
+
+-- Aligns to 1 character
+vim.keymap.set(
+    'x',
+    'aa',
+    function()
+        require'align'.align_to_char({
+            preview = true,
+            length = 1,
+        })
+    end,
+    NS
+)
+
 require('ccc').setup {
     highlighter = {
         auto_enable = true,

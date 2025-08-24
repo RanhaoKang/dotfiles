@@ -50,7 +50,6 @@ function y() {
 	[ -n "$cwd" ] && [ "$cwd" != "$PWD" ] && builtin cd -- "$cwd"
 	rm -f -- "$tmp"
 }
-alias open=y
 trap "" SIGTSTP
 alias pac=pacman
 

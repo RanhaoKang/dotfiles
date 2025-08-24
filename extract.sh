@@ -12,11 +12,6 @@
 #
 # Example:
 # $ extract file_name.zip
-#
-# Author: Vitalii Tereshchuk, 2013
-# Web:    https://dotoca.net
-# Github: https://github.com/xvoland/Extract/blob/master/extract.sh
-
 
 SAVEIFS=$IFS
 IFS=$' \t\n'

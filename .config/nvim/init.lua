@@ -99,6 +99,16 @@ vim.lsp.config['luals'] = {
 }
 
 vim.lsp.enable('luals')
+
+vim.lsp.config['pylsp'] = {
+    cmd = { 'pylsp' },
+    filetypes = { 'python' },
+    capabilities = vim.lsp.protocol.make_client_capabilities()
+}
+vim.lsp.enable('pylsp')
+
+
+
 vim.api.nvim_create_autocmd({"BufRead", "BufNewFile"}, {
     pattern = {"*.lua.txt", "*.lua"},
     callback = function()
@@ -370,7 +380,7 @@ vim.api.nvim_create_autocmd('FileType', {
     -- This heuristic matches 'end' followed by ')', '}', or ','
     -- vim.fn.matchadd('Conceal', '\function.*\v end\\ze\\s*[,})]', 11, -1, { conceal = '' })
     vim.fn.matchadd('Conceal', '\\<return\\>\\s')
-    vim.fn.matchadd('Conceal', '\\vfunction\\ze\\s*\\(')
+    vim.fn.matchadd('Conceal', '\\<function\\>\\s')
     map('i', '+=', self_add)
     map('i', '::a', array_add)
   end,

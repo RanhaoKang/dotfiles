@@ -166,7 +166,6 @@ Plug 'nvim-zh/colorful-winsep.nvim'
 Plug 'numToStr/Comment.nvim'
 Plug 'sitiom/nvim-numbertoggle'
 Plug 'mireq/large_file'
-Plug 'ggandor/leap.nvim'
 Plug 'eraserhd/parinfer-rust'
 Plug 'uga-rosa/ccc.nvim'
 Plug 'Vonr/align.nvim'
@@ -192,21 +191,6 @@ require('ccc').setup {
         lsp = true,
     },
 }
--- Exclude whitespace and the middle of alphabetic words from preview:
---   foobar[baaz] = quux
---   ^----^^^--^^-^-^--^
-require('leap').opts.preview_filter =
-  function (ch0, ch1, ch2)
-    return not (
-      ch1:match('%s') or
-      ch0:match('%a') and ch1:match('%a') and ch2:match('%a')
-    )
-  end
-require('leap').opts.equivalence_classes = { ' \t\r\n', '([{', ')]}', '\'"`' } 
-require('leap.user').set_repeat_keys('<enter>', '<backspace>')
-vim.keymap.set({'n', 'x', 'o'}, 'f', '<Plug>(leap)')
-vim.keymap.set('n',             'F', '<Plug>(leap-from-window)')
-
 require('Comment').setup()
 require('mini.statusline').setup()
 require("large_file").setup()

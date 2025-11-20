@@ -32,6 +32,8 @@ vim.keymap.set("n",    "<S-Tab>",       "<<",  opts)
 vim.keymap.set("v",    "<Tab>",         ">gv", opts)
 vim.keymap.set("v",    "<S-Tab>",       "<gv", opts)
 vim.keymap.set("n",    "<C-t>",       ":NERDTreeToggle %<CR>", opts)
+vim.keymap.set("n",    "[",       ":cprev<CR>", opts)
+vim.keymap.set("n",    "]",       ":cnext<CR>", opts)
 vim.api.nvim_set_keymap("i", "<Tab>", 'pumvisible() ? "<C-y>" : "<Tab>"', { expr = true })
 vim.api.nvim_set_keymap("i", "<S-Tab>", 'pumvisible() ? "<C-n>" : "<C-d>"', { expr = true })
 local map = vim.keymap.set
@@ -361,12 +363,16 @@ vim.api.nvim_create_autocmd('FileType', {
     vim.wo.concealcursor = ''
 
     -- Rule 2: Conceal the 'function' keyword when followed by '()'
-    -- vim.fn.matchadd('Conceal', '\\vfunction\\ze\\s*\\(', 11, -1, { conceal = '' })
+    vim.fn.matchadd('Conceal', '\\vfunction\\ze\\s*\\(', 11, -1, { conceal = '' })
     -- Rule 3: Conceal the 'end' keyword when it likely closes a lambda
     -- This heuristic matches 'end' followed by ')', '}', or ','
     -- vim.fn.matchadd('Conceal', '\function.*\v end\\ze\\s*[,})]', 11, -1, { conceal = '' })
     vim.fn.matchadd('Conceal', '\\<return\\>\\s')
     vim.fn.matchadd('Conceal', '\\<function\\>\\s')
+    vim.fn.matchadd('Conceal', '\\<function\\>\\ze\\s()')
+    vim.fn.matchadd('Conceal', [[\v\)\s*\zs return]], 10, -1, { conceal = '→' })
+    -- vim.fn.matchadd('Conceal', [[\vend\ze\s*[,})}]], 10, -1, { conceal = '' })
+    vim.fn.matchadd('Conceal', ' end\\ze\\s*,')
     map('i', '+=', self_cal'+')
     map('i', '-=', self_cal'-')
     map('i', '/=', self_cal'/')

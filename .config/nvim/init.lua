@@ -32,6 +32,8 @@ vim.keymap.set("n",    "<S-Tab>",       "<<",  opts)
 vim.keymap.set("v",    "<Tab>",         ">gv", opts)
 vim.keymap.set("v",    "<S-Tab>",       "<gv", opts)
 vim.keymap.set("n",    "<C-t>",       ":NERDTreeToggle %<CR>", opts)
+vim.keymap.set("n",    "[",       ":cprev<CR>", opts)
+vim.keymap.set("n",    "]",       ":cnext<CR>", opts)
 vim.api.nvim_set_keymap("i", "<Tab>", 'pumvisible() ? "<C-y>" : "<Tab>"', { expr = true })
 vim.api.nvim_set_keymap("i", "<S-Tab>", 'pumvisible() ? "<C-n>" : "<C-d>"', { expr = true })
 local map = vim.keymap.set
@@ -166,7 +168,6 @@ Plug 'nvim-zh/colorful-winsep.nvim'
 Plug 'numToStr/Comment.nvim'
 Plug 'sitiom/nvim-numbertoggle'
 Plug 'mireq/large_file'
-Plug 'ggandor/leap.nvim'
 Plug 'eraserhd/parinfer-rust'
 Plug 'uga-rosa/ccc.nvim'
 Plug 'Vonr/align.nvim'
@@ -192,21 +193,6 @@ require('ccc').setup {
         lsp = true,
     },
 }
--- Exclude whitespace and the middle of alphabetic words from preview:
---   foobar[baaz] = quux
---   ^----^^^--^^-^-^--^
-require('leap').opts.preview_filter =
-  function (ch0, ch1, ch2)
-    return not (
-      ch1:match('%s') or
-      ch0:match('%a') and ch1:match('%a') and ch2:match('%a')
-    )
-  end
-require('leap').opts.equivalence_classes = { ' \t\r\n', '([{', ')]}', '\'"`' } 
-require('leap.user').set_repeat_keys('<enter>', '<backspace>')
-vim.keymap.set({'n', 'x', 'o'}, 'f', '<Plug>(leap)')
-vim.keymap.set('n',             'F', '<Plug>(leap-from-window)')
-
 require('Comment').setup()
 require('mini.statusline').setup()
 require("large_file").setup()
@@ -314,18 +300,18 @@ end)
 local function get_word_before_cursor()
     local line = vim.fn.getline('.')
     local col = vim.fn.col('.')  -- Vim columns are 1-based
-    
+
     -- Find the last word character before cursor (ignore spaces)
     local word_end = col
     while word_end > 1 and line:sub(word_end - 1, word_end - 1):match('%s') do
         word_end = word_end - 1
     end
-    
+
     local word_start = word_end
-    while word_start > 1 and line:sub(word_start - 1, word_start - 1):match('%w') do
+    while word_start > 1 and line:sub(word_start - 1, word_start - 1):match('[%w%._]') do
         word_start = word_start - 1
     end
-    
+
     if word_start <= word_end then
         return line:sub(word_start, word_end - 1), word_start, word_end
     end
@@ -333,30 +319,32 @@ local function get_word_before_cursor()
 end
 
 -- For += mapping: converts 'var' to 'var = var + '
-local function self_add()
-    local variable, start_pos, end_pos = get_word_before_cursor()
-    if not variable or #variable == 0 then return end
-    
-    local line = vim.fn.getline('.')
-    local new_line = line:sub(1, start_pos - 1) 
-                   .. variable .. ' = ' .. variable .. ' + ' 
-                   .. line:sub(end_pos)
-    
-    vim.fn.setline('.', new_line)
-    -- Position cursor after ' + ' (3 characters after variable insertion point)
-    vim.fn.cursor(0, start_pos + #variable + 3 + #variable + 3)
+local function self_cal(sign)
+    return function()
+        local variable, start_pos, end_pos = get_word_before_cursor()
+        if not variable or #variable == 0 then return end
+
+        local line = vim.fn.getline('.')
+        local new_line = line:sub(1, start_pos - 1)
+                       .. variable .. ' = ' .. variable .. (' %s '):format(sign)
+                       .. line:sub(end_pos)
+
+        vim.fn.setline('.', new_line)
+        -- Position cursor after ' + ' (3 characters after variable insertion point)
+        vim.fn.cursor(0, start_pos + #variable + 3 + #variable + 3)
+    end
 end
 
 -- For ::a mapping: converts 'var' to 'var[#var + 1] = '
 local function array_add()
     local variable, start_pos, end_pos = get_word_before_cursor()
     if not variable or #variable == 0 then return end
-    
+
     local line = vim.fn.getline('.')
-    local new_line = line:sub(1, start_pos - 1) 
-                   .. variable .. '[#' .. variable .. ' + 1] = ' 
+    local new_line = line:sub(1, start_pos - 1)
+                   .. variable .. '[#' .. variable .. ' + 1] = '
                    .. line:sub(end_pos)
-    
+
     vim.fn.setline('.', new_line)
     -- Position cursor after ' = ' (13 characters after variable insertion point)
     vim.fn.cursor(0, start_pos + #variable + 11 + #variable + 4)
@@ -375,13 +363,20 @@ vim.api.nvim_create_autocmd('FileType', {
     vim.wo.concealcursor = ''
 
     -- Rule 2: Conceal the 'function' keyword when followed by '()'
-    -- vim.fn.matchadd('Conceal', '\\vfunction\\ze\\s*\\(', 11, -1, { conceal = '' })
+    vim.fn.matchadd('Conceal', '\\vfunction\\ze\\s*\\(', 11, -1, { conceal = '' })
     -- Rule 3: Conceal the 'end' keyword when it likely closes a lambda
     -- This heuristic matches 'end' followed by ')', '}', or ','
     -- vim.fn.matchadd('Conceal', '\function.*\v end\\ze\\s*[,})]', 11, -1, { conceal = '' })
     vim.fn.matchadd('Conceal', '\\<return\\>\\s')
     vim.fn.matchadd('Conceal', '\\<function\\>\\s')
-    map('i', '+=', self_add)
+    vim.fn.matchadd('Conceal', '\\<function\\>\\ze\\s()')
+    vim.fn.matchadd('Conceal', [[\v\)\s*\zs return]], 10, -1, { conceal = '→' })
+    -- vim.fn.matchadd('Conceal', [[\vend\ze\s*[,})}]], 10, -1, { conceal = '' })
+    vim.fn.matchadd('Conceal', ' end\\ze\\s*,')
+    map('i', '+=', self_cal'+')
+    map('i', '-=', self_cal'-')
+    map('i', '/=', self_cal'/')
+    map('i', '*=', self_cal'*')
     map('i', '::a', array_add)
   end,
 })

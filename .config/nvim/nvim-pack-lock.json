@@ -1,0 +1,36 @@
+{
+  "plugins": {
+    "Comment.nvim": {
+      "rev": "e30b7f2008e52442154b66f7c519bfd2f1e32acb",
+      "src": "https://github.com/numToStr/Comment.nvim"
+    },
+    "align.nvim": {
+      "rev": "12ed24b34df81d57e777fea5a535611bab10a620",
+      "src": "https://github.com/Vonr/align.nvim"
+    },
+    "blink.cmp": {
+      "rev": "7beba91fdc61fdc84ea6d6395d614671e609f895",
+      "src": "https://github.com/saghen/blink.cmp"
+    },
+    "colorful-winsep.nvim": {
+      "rev": "e555611c8f39918e30d033a97ea1a5af457ce75e",
+      "src": "https://github.com/nvim-zh/colorful-winsep.nvim"
+    },
+    "fzf.vim": {
+      "rev": "879db51d0965515cdaef9b7f6bdeb91c65d2829e",
+      "src": "https://github.com/junegunn/fzf.vim"
+    },
+    "large_file": {
+      "rev": "d9740134f80994d56f50e2931ba9307f49e420dc",
+      "src": "https://github.com/mireq/large_file"
+    },
+    "mini.statusline": {
+      "rev": "14919901649d20d020e659c63c03baa75cd94f33",
+      "src": "https://github.com/nvim-mini/mini.statusline"
+    },
+    "nerdtree": {
+      "rev": "690d061b591525890f1471c6675bcb5bdc8cdff9",
+      "src": "https://github.com/preservim/nerdtree"
+    }
+  }
+}

@@ -72,35 +72,7 @@ map("v", "<", "<gv")
 map("n", "<C-/>", "gcc")
 map("n", "tc", ":CccPick<CR>")
 
--- LSP --
-vim.lsp.config['luals'] = {
-  -- Command and arguments to start the server.
-  cmd = { 'lua-language-server' },
-  -- Filetypes to automatically attach to.
-  filetypes = { 'lua', 'txt' },
-  -- Sets the "root directory" to the parent directory of the file in the
-  -- current buffer that contains either a ".luarc.json" or a
-  -- ".luarc.jsonc" file. Files that share a root directory will reuse
-  -- the connection to the same LSP server.
-  -- Nested lists indicate equal priority, see |vim.lsp.Config|.
-  root_markers = { { '.luarc.json', '.luarc.jsonc' }, '.git' },
-  -- Specific settings to send to the server. The schema for this is
-  -- defined by the server. For example the schema for lua-language-server
-  -- can be found here https://raw.githubusercontent.com/LuaLS/vscode-lua/master/setting/schema.json
-  settings = {
-    Lua = {
-      runtime = {
-        version = 'Lua5.3',
-      },
-      completion = {
-        callSnippet = "None" -- or "Both" or "None"
-      }
-    }
-  },
-  capabilities = vim.lsp.protocol.make_client_capabilities()
-}
-
-vim.lsp.enable('luals')
+vim.lsp.enable('lua_ls')
 
 vim.lsp.config['pylsp'] = {
     cmd = { 'pylsp' },
@@ -112,15 +84,9 @@ vim.lsp.enable('pylsp')
 
 
 vim.api.nvim_create_autocmd({"BufRead", "BufNewFile"}, {
-    pattern = {"*.lua.txt", "*.lua"},
+    pattern = {"*.lua.txt", "*.lua", '*.script', '*.gui_script', '*.render_script' },
     callback = function()
         vim.opt.filetype = 'lua'
-    end
-})
-vim.api.nvim_create_autocmd({"BufRead", "BufNewFile"}, {
-    pattern = {"*.fnl"},
-    callback = function()
-        vim.opt.filetype = 'lisp'
     end
 })
 vim.api.nvim_create_autocmd('LspAttach', {
@@ -155,24 +121,24 @@ vim.api.nvim_set_keymap('n', 'gkk', 'lua FindMe()<CR>', { noremap = true, silent
 -- install vim-plug via: sh -c 'curl -fLo "${XDG_DATA_HOME:-$HOME/.local/share}"/nvim/site/autoload/plug.vim --create-dirs https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim'
 vim.cmd [[
 call plug#begin()
-Plug 'preservim/nerdtree'
 Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }
-Plug 'junegunn/fzf.vim'
-Plug 'jbyuki/one-small-step-for-vimkind'
-Plug 'mfussenegger/nvim-dap'
-Plug 'echasnovski/mini.statusline'
-Plug 'zhoupro/neovim-lua-debug'
 Plug 'mg979/vim-visual-multi', {'branch': 'master'}
-Plug 'nvim-zh/colorful-winsep.nvim'
 
-Plug 'numToStr/Comment.nvim'
 Plug 'sitiom/nvim-numbertoggle'
-Plug 'mireq/large_file'
-Plug 'eraserhd/parinfer-rust'
 Plug 'uga-rosa/ccc.nvim'
-Plug 'Vonr/align.nvim'
 call plug#end()
 ]]
+
+vim.pack.add {
+    { src = 'https://github.com/preservim/nerdtree' },
+    { src = 'https://github.com/numToStr/Comment.nvim' },
+    { src = 'https://github.com/nvim-zh/colorful-winsep.nvim' },
+    { src = 'https://github.com/Vonr/align.nvim' },
+    { src = 'https://github.com/mireq/large_file' },
+    { src = 'https://github.com/nvim-mini/mini.statusline' },
+    { src = 'https://github.com/junegunn/fzf.vim' },
+    { src = 'https://github.com/saghen/blink.cmp' },
+}
 
 -- Aligns to 1 character
 vim.keymap.set(
@@ -207,95 +173,11 @@ require('colorful-winsep').setup {
     smooth = false,
 }
 
-local dap = require 'dap'
-dap.configurations.lua = {
-    {
-        type        = "lua",
-        request     = "launch",
-        name        = "🐛 EmmyLua Debug Session",
-        host        = "localhost",
-        port        = 9966,
-        sourcePaths = {
-                        "${workspaceFolder}"
-        },
-        ext         = {
-                        ".lua",
-                        ".lua.txt",
-                        ".lua.bytes"
-        },
-        ideConnectDebugger = true,
-    }
-}
-dap.adapters.lua = function(callback, config)
-  callback({ type = 'server', host = config.host or "127.0.0.1", port = config.port or 9966 })
-end
-
-
--- todo --
-do
-local function highlight_lines()
-    local buf = 0  -- Current buffer
-    local ns_id = vim.api.nvim_create_namespace("TodoHighlight")
-    vim.api.nvim_buf_clear_namespace(buf, ns_id, 0, -1)  -- Clear previous highlights
-
-    for i = 1, vim.api.nvim_buf_line_count(buf) do
-        local line = vim.fn.getline(i)
-        if line:match("^%s*%[x%]") then
-            vim.api.nvim_set_hl(0, 'TodoDone', { fg = '#000000', bg = '#B3F6C0', underline = false })
-            vim.api.nvim_set_hl(0, 'TodoDone', { fg = '#B3F6C0', underline = false })
-            vim.api.nvim_set_hl(0, 'TodoDone', { fg = '#555555', underline = false })
-            vim.api.nvim_buf_add_highlight(buf, ns_id, 'TodoDone', i - 1, 0, -1)
-        end
-    end
-end
-
-local function toggle_todo()
-    local line = vim.fn.getline('.')
-    if line:match("^%s*%[%s*%]") then
-        line = line:gsub("%[%s*%]", "[x]")
-    elseif line:match("^%s*%[x%]") then
-        line = line:gsub("%[x%]", "[ ]")
-    else
-        return
-    end
-    vim.fn.setline('.', line)
-
-    highlight_lines()
-end
-
-vim.api.nvim_create_autocmd("BufEnter", {
-    pattern = "TODO",
-    callback = function()
-        opt.spell = false
-        map('n', '<space>', toggle_todo)
-        highlight_lines()
-    end
-})
-end
-
 ----[[
 
 -- Experiment --
 
 --]]
-vim.keymap.set('n', '<leader>db', require"dap".toggle_breakpoint, { noremap = true })
-vim.keymap.set('n', '<leader>dc', require"dap".continue, { noremap = true })
-vim.keymap.set('n', '<leader>do', require"dap".step_over, { noremap = true })
-vim.keymap.set('n', '<leader>di', require"dap".step_into, { noremap = true })
-
-vim.keymap.set('n', '<leader>dl', function() 
-  require"osv".launch({port = 8086}) 
-end, { noremap = true })
-
-vim.keymap.set('n', '<leader>dw', function()
-  local widgets = require"dap.ui.widgets"
-  widgets.hover()
-end)
-
-vim.keymap.set('n', '<leader>df', function()
-  local widgets = require"dap.ui.widgets"
-  widgets.centered_float(widgets.frames)
-end)
 
 local function get_word_before_cursor()
     local line = vim.fn.getline('.')

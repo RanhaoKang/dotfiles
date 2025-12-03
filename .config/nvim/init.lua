@@ -49,6 +49,10 @@ map('i', '<C-S-H>', '<ESC>^i')
 map('i', '<C-S-L>', '<ESC>$i')
 map('i', '<C-O>', '<ESC>o')
 map('i', '<C-S-O>', '<ESC>O')
+vim.keymap.set('n', '<A-j>', ':m .+1<CR>==', { desc = 'Move line down' })
+vim.keymap.set('n', '<A-k>', ':m .-2<CR>==', { desc = 'Move line up' })
+vim.keymap.set('v', '<A-j>', ":m '>+1<CR>gv=gv", { desc = 'Move selection down' })
+vim.keymap.set('v', '<A-k>', ":m '<-2<CR>gv=gv", { desc = 'Move selection up' })
 vim.api.nvim_create_user_command('Make ui', ':!cat scripts/dev/template/ui.lua >> %', {
     nargs = 1,
 })
@@ -72,7 +76,9 @@ map("v", "<", "<gv")
 map("n", "<C-/>", "gcc")
 map("n", "tc", ":CccPick<CR>")
 
-vim.lsp.enable('lua_ls')
+vim.lsp.enable {
+    'lua_ls'
+}
 
 vim.lsp.config['pylsp'] = {
     cmd = { 'pylsp' },
@@ -130,6 +136,7 @@ call plug#end()
 ]]
 
 vim.pack.add {
+    { src = 'https://github.com/neovim/nvim-lspconfig' },
     { src = 'https://github.com/preservim/nerdtree' },
     { src = 'https://github.com/numToStr/Comment.nvim' },
     { src = 'https://github.com/nvim-zh/colorful-winsep.nvim' },
@@ -137,7 +144,7 @@ vim.pack.add {
     { src = 'https://github.com/mireq/large_file' },
     { src = 'https://github.com/nvim-mini/mini.statusline' },
     { src = 'https://github.com/junegunn/fzf.vim' },
-    { src = 'https://github.com/saghen/blink.cmp' },
+    { src = 'https://github.com/saghen/blink.cmp', version = vim.version.range('1.*') },
 }
 
 -- Aligns to 1 character
@@ -171,6 +178,18 @@ vim.api.nvim_set_keymap('n', '<C-S-p>', ':RG<CR>', { noremap = true, silent = tr
 require('colorful-winsep').setup {
     hi = { bg = '#16161E', fg = '#B3F6C0' },
     smooth = false,
+}
+
+require("blink.cmp").setup {
+  keymap = { preset = "enter" },
+  appearance = {
+    nerd_font_variant = "mono",
+  },
+  completion = { documentation = { auto_show = false } },
+  sources = {
+    default = { "lsp", "path", "snippets", "buffer" },
+  },
+  fuzzy = { implementation = "prefer_rust_with_warning" },
 }
 
 ----[[

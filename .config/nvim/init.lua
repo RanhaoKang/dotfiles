@@ -22,6 +22,7 @@ opt.foldmethod = "indent"
 opt.foldlevel = 4
 opt.pumheight = 7
 opt.scrolloff = 5
+opt.cursorline = true
 
 opt.completeopt = { 'menuone', 'noinsert', 'fuzzy' }
 

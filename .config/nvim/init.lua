@@ -145,7 +145,6 @@ vim.pack.add {
     { src = 'https://github.com/mireq/large_file' },
     { src = 'https://github.com/nvim-mini/mini.statusline' },
     { src = 'https://github.com/junegunn/fzf.vim' },
-    { src = 'https://github.com/saghen/blink.cmp', version = vim.version.range('1.*') },
 }
 
 -- Aligns to 1 character
@@ -179,18 +178,6 @@ vim.api.nvim_set_keymap('n', '<C-S-p>', ':RG<CR>', { noremap = true, silent = tr
 require('colorful-winsep').setup {
     hi = { bg = '#16161E', fg = '#B3F6C0' },
     smooth = false,
-}
-
-require("blink.cmp").setup {
-  keymap = { preset = "enter" },
-  appearance = {
-    nerd_font_variant = "mono",
-  },
-  completion = { documentation = { auto_show = false } },
-  sources = {
-    default = { "lsp", "path", "snippets", "buffer" },
-  },
-  fuzzy = { implementation = "prefer_rust_with_warning" },
 }
 
 ----[[

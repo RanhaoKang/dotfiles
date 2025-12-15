@@ -32,10 +32,7 @@ function M.reload_file()
 
     -- --- 步骤 4: 调用 encrypt_name.py 脚本获取加密文件名 ---
     local encrypt_cmd = string.format("python3 %s %s", vim.fn.shellescape(encrypt_script), vim.fn.shellescape(module_path))
-    local encrypted_filename_output = vim.fn.system(encrypt_cmd)
-
-    -- system() 返回的输出末尾可能包含换行符，需要去除
-    local encrypted_filename = string.match(encrypted_filename_output, "^%s*(.-)%s*$") 
+    local encrypted_filename = string.match(vim.fn.system(encrypt_cmd), "^%s*(.-)%s*$")
 
     if not encrypted_filename or #encrypted_filename == 0 then
         vim.notify("加密失败，请检查脚本执行权限和输出。", vim.log.levels.ERROR, { title = "Neovim Hot-Reload" })
@@ -50,7 +47,7 @@ function M.reload_file()
 
     -- --- 步骤 5: adb push 当前文件到目标路径 ---
     local target_path = "/sdcard/Android/data/com.blina.match2.tt/files/s/" .. encrypted_filename
-    local push_cmd = string.format("adb push %s %s", vim.fn.shellescape(current_file .. '.tmp'), vim.fn.shellescape(target_path))
+    local push_cmd = string.format("adb push %s %s", vim.fn.shellescape('Library/hotreload_tmp'), vim.fn.shellescape(target_path))
     local push_output = vim.fn.system(push_cmd)
 
     if vim.v.shell_error ~= 0 then
@@ -58,8 +55,6 @@ function M.reload_file()
         vim.notify(push_output, vim.log.levels.DEBUG, { title = "Neovim Hot-Reload" })
         return
     end
-
-    vim.fn.system(('rm ').format(vim.fn.shellescape(current_file .. '.tmp')))
 
     -- --- 步骤 6: 调用 adb send Activity 进行热重载 ---
     -- 步骤 3 的 module path 是用于构造热重载 Activity Intent 的参数

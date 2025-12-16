@@ -6,9 +6,18 @@ local PACKAGE_NAME = 'com.blina.match2.tt'
 local TARGET_DATA_DIR = ("/sdcard/Android/data/%s/files/s/"):format(PACKAGE_NAME)
 local TEMP_FILE = 'Library/hotreload_tmp' -- 暂存文件
 local TEMP_DEVICE_PATH = '/data/local/tmp/' -- 新增临时设备路径
+local ENABLE = false
 
 --- 核心热重载逻辑
+
+function M.enable_hotreload()
+    ENABLE = true
+end
+
 function M.reload_file()
+    if not ENABLE then
+        return
+    end
     if vim.bo.filetype ~= 'lua' then
         -- 仅在非自动触发且手动调用时显示警告
         if vim.v.event:find("UserCommand") then
@@ -22,7 +31,8 @@ function M.reload_file()
     -- 检查加密脚本是否存在
     local encrypt_script = SCRIPTS_DIR .. 'encrypt_name.py'
     if vim.fn.filereadable(encrypt_script) == 0 then
-        vim.notify("热重载失败：找不到加密脚本：" .. encrypt_script, vim.log.levels.ERROR, { title = "Hot-Reload" })
+        -- vim.notify("热重载失败：找不到加密脚本：" .. encrypt_script, vim.log.levels.ERROR, { title = "Hot-Reload" })
+        vim.notify(vim.fn.system('python3 scripts/dev/hotreload.py ' .. vim.fn.shellescape(current_file)))
         return
     end
 
@@ -118,7 +128,7 @@ function M.setup()
         pattern = "lua",
         group = RELOAD_GROUP,
         callback = function()
-            -- 定义手动命令 :Reload 和 :R
+            vim.api.nvim_create_user_command('Hotreload', M.enable_hotreload, { nargs = 0, desc = '热重载当前 Lua 文件到 Android 设备' })
             vim.api.nvim_create_user_command('Reload', M.reload_file, { nargs = 0, desc = '热重载当前 Lua 文件到 Android 设备' })
             vim.api.nvim_create_user_command('R', M.reload_file, { nargs = 0, desc = '热重载当前 Lua 文件到 Android 设备 (别名)' })
         end,

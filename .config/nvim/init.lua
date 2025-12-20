@@ -145,6 +145,7 @@ vim.pack.add {
     { src = 'https://github.com/mireq/large_file' },
     { src = 'https://github.com/nvim-mini/mini.statusline' },
     { src = 'https://github.com/junegunn/fzf.vim' },
+    { src = 'https://github.com/sindrets/diffview.nvim' },
 }
 
 -- Aligns to 1 character
@@ -169,6 +170,7 @@ require('ccc').setup {
 require('Comment').setup()
 require('mini.statusline').setup()
 require("large_file").setup()
+require("diffview").setup()
 vim.g.VM_maps = {
     ["Find Under"] = "<C-d>"
 }
@@ -268,26 +270,6 @@ vim.api.nvim_create_autocmd('FileType', {
     map('i', '*=', self_cal'*')
     map('i', '::a', array_add)
   end,
-})
-
--- 仅在开启 diff 模式时生效的快捷键
-vim.api.nvim_create_autocmd("OptionSet", {
-    pattern = "diff",
-    callback = function()
-        if vim.v.option_new == "true" then
-            local opts = { buffer = true, silent = true }
-
-            -- 1. 取整个 Block (dh = 左, dl = 右)
-            -- 在 3-way diff 中，//2 通常是左边，//3 通常是右边
-            vim.keymap.set("n", "dh", ":diffget //2<CR>", opts)
-            vim.keymap.set("n", "dl", ":diffget //3<CR>", opts)
-
-            -- 2. 取单行 (dih = 左单行, dil = 右单行)
-            -- 原理：先用 V 选中当前行，然后对选区执行 diffget
-            vim.keymap.set("n", "dih", ":.diffget //2<CR>", opts)
-            vim.keymap.set("n", "dil", ":.diffget //3<CR>", opts)
-        end
-    end
 })
 
 require('hotreload').setup()

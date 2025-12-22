@@ -21,6 +21,10 @@
       "rev": "4516612fe98ff56ae0415a259ff6361a89419b0a",
       "src": "https://github.com/sindrets/diffview.nvim"
     },
+    "dired.nvim": {
+      "rev": "b56790d065bf503f7d56d05d7f9893ef249b99ed",
+      "src": "https://github.com/X3eRo0/dired.nvim"
+    },
     "fzf.vim": {
       "rev": "879db51d0965515cdaef9b7f6bdeb91c65d2829e",
       "src": "https://github.com/junegunn/fzf.vim"
@@ -36,6 +40,10 @@
     "nerdtree": {
       "rev": "690d061b591525890f1471c6675bcb5bdc8cdff9",
       "src": "https://github.com/preservim/nerdtree"
+    },
+    "nui.nvim": {
+      "rev": "de740991c12411b663994b2860f1a4fd0937c130",
+      "src": "https://github.com/MunifTanjim/nui.nvim"
     },
     "nvim-lspconfig": {
       "rev": "effe4bf2e1afb881ea67291c648b68dd3dfc927a",

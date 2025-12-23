@@ -181,6 +181,7 @@ vim.api.nvim_create_autocmd('FileType', {
 
 require('hotreload').setup()
 require('diffviewer').setup()
+require('dired')
 
 -- we define keymap at the bottom, as we do not want plugins flush our keymap
 

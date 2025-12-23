@@ -135,7 +135,9 @@ vim.pack.add {
     { src = 'https://github.com/junegunn/fzf.vim' },
         { src = 'https://github.com/junegunn/fzf' },
     { src = 'https://github.com/sindrets/diffview.nvim' },
+    { src = 'https://github.com/blazkowolf/gruber-darker.nvim' },
 }
+vim.cmd.colorscheme 'gruber-darker'
 
 -- Aligns to 1 character
 vim.keymap.set(

@@ -102,18 +102,21 @@ local function refresh_unity()
             local c_prev = client.focus
             client.focus = c
             c:raise()
-            gears.timer.start_new(0.05, function()
-                root.fake_input('key_press',   'F5')
-                root.fake_input('key_release', 'F5')
-                naughty.notify {
-                    text = ('refreshed %s'):format(c.class)
-                }
-                -- if c_prev and c_prev.valid then
-                --     client.focus = c_prev
-                --     c_prev:raise()
-                -- end
-                return false
-            end)
+            naughty.notify {
+                text = ('refreshed %s'):format(c.class)
+            }
+            -- gears.timer.start_new(0.05, function()
+            --     root.fake_input('key_press',   'F5')
+            --     root.fake_input('key_release', 'F5')
+            --     naughty.notify {
+            --         text = ('refreshed %s'):format(c.class)
+            --     }
+            --     -- if c_prev and c_prev.valid then
+            --     --     client.focus = c_prev
+            --     --     c_prev:raise()
+            --     -- end
+            --     return false
+            -- end)
             break
         end
     end

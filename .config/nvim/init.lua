@@ -28,54 +28,9 @@ opt.completeopt = { 'menuone', 'noinsert', 'fuzzy' }
 
 -- Mapping --
 local opts = { noremap = true, silent = true }
-vim.keymap.set("n",    "<Tab>",         ">>",  opts)
-vim.keymap.set("n",    "<S-Tab>",       "<<",  opts)
-vim.keymap.set("v",    "<Tab>",         ">gv", opts)
-vim.keymap.set("v",    "<S-Tab>",       "<gv", opts)
-vim.keymap.set("n",    "<C-t>",       ":NERDTreeToggle %<CR>", opts)
-vim.keymap.set("n",    "[",       ":cprev<CR>", opts)
-vim.keymap.set("n",    "]",       ":cnext<CR>", opts)
-vim.api.nvim_set_keymap("i", "<Tab>", 'pumvisible() ? "<C-y>" : "<Tab>"', { expr = true })
-vim.api.nvim_set_keymap("i", "<S-Tab>", 'pumvisible() ? "<C-n>" : "<C-d>"', { expr = true })
-local map = vim.keymap.set
-map('n', 'H', '^')
-map('n', 'L', '$')
-map('n', 'J', '20j')
-map('n', 'K', '20k')
-map('i', '<C-H>', '<LEFT>')
-map('i', '<C-L>', '<RIGHT>')
-map('i', '<C-J>', '<DOWN>')
-map('i', '<C-K>', '<UP>')
-map('i', '<C-S-H>', '<ESC>^i')
-map('i', '<C-S-L>', '<ESC>$i')
-map('i', '<C-O>', '<ESC>o')
-map('i', '<C-S-O>', '<ESC>O')
-vim.keymap.set('n', '<A-j>', ':m .+1<CR>==', { desc = 'Move line down' })
-vim.keymap.set('n', '<A-k>', ':m .-2<CR>==', { desc = 'Move line up' })
-vim.keymap.set('v', '<A-j>', ":m '>+1<CR>gv=gv", { desc = 'Move selection down' })
-vim.keymap.set('v', '<A-k>', ":m '<-2<CR>gv=gv", { desc = 'Move selection up' })
 vim.api.nvim_create_user_command('Make ui', ':!cat scripts/dev/template/ui.lua >> %', {
     nargs = 1,
 })
-
-map('n', '<C-h>', '<C-w>h')
-map('n', '<C-l>', '<C-w>l')
-map('n', '<C-j>', '<C-w>j')
-map('n', '<C-k>', '<C-w>k')
-
-for _, bracket in ipairs { '()', '<>', '{}', '[]', '""', "''", '``', } do
-    map('i', bracket             , bracket .. '<left>'  , opts)
-    map('i', bracket .. '<CR>'   , bracket .. '<CR>'    , opts)
-    map('i', bracket .. '<Space>', bracket .. '<Space>' , opts)
-    map('i', bracket .. '.'      , bracket .. '.'       , opts)
-    map('i', bracket .. ':'      , bracket .. ':'       , opts)
-    map('i', bracket .. ','      , bracket .. ','       , opts)
-end
-
-map("v", ">", ">gv")
-map("v", "<", "<gv")
-map("n", "<C-/>", "gcc")
-map("n", "tc", ":CccPick<CR>")
 
 vim.lsp.enable {
     'lua_ls'
@@ -107,22 +62,6 @@ vim.api.nvim_create_autocmd('LspAttach', {
   end,
 })
 
-vim.api.nvim_set_keymap('n', 'gg', ':cc<CR>', { noremap = true, silent = true })
-
-function FindMe()
-    local command = 'fd --type f ' .. vim.fn.expand('<cword>') .. ' | grep -v meta | grep lua'
-    local output = vim.fn.system(command)
-    if output ~= '' then
-        local files = vim.fn.split(vim.fn.trim(output), '\n')
-        for _, file in ipairs(files) do
-            vim.cmd('silent! botright vnew ' .. file)
-            vim.cmd('silent! setf lua')
-        end
-    end
-end
-
-vim.api.nvim_set_keymap('n', 'gkk', 'lua FindMe()<CR>', { noremap = true, silent = true })
-
 -- Plugins --
 vim.pack.add {
     { src = 'https://github.com/neovim/nvim-lspconfig' },
@@ -138,30 +77,10 @@ vim.pack.add {
     { src = 'https://github.com/blazkowolf/gruber-darker.nvim' },
 }
 vim.cmd.colorscheme 'gruber-darker'
-
--- Aligns to 1 character
-vim.keymap.set(
-    'x',
-    'aa',
-    function()
-        require'align'.align_to_char({
-            preview = true,
-            length = 1,
-        })
-    end,
-    NS
-)
-
 require('Comment').setup()
 require('mini.statusline').setup()
 require("large_file").setup()
 require("diffview").setup()
-vim.g.VM_maps = {
-    ["Find Under"] = "<C-d>"
-}
-vim.api.nvim_set_keymap('n', '<C-p>', ':Files<CR>', { noremap = true, silent = true })
-vim.api.nvim_set_keymap('n', '<C-S-p>', ':RG<CR>', { noremap = true, silent = true })
-
 require('colorful-winsep').setup {
     hi = { bg = '#16161E', fg = '#B3F6C0' },
     smooth = false,
@@ -229,6 +148,7 @@ end
 -- Create an autocommand group to prevent stacking duplicate commands
 local augroup = vim.api.nvim_create_augroup('LuaConceal', { clear = true })
 
+local map = vim.keymap.set
 -- Create the autocommand for Lua files
 vim.api.nvim_create_autocmd('FileType', {
   group = augroup,
@@ -257,5 +177,67 @@ vim.api.nvim_create_autocmd('FileType', {
   end,
 })
 
+-- custom plugins
+
 require('hotreload').setup()
 require('diffviewer').setup()
+
+-- we define keymap at the bottom, as we do not want plugins flush our keymap
+
+map("n",    "<Tab>",         ">>",  opts)
+map("n",    "<S-Tab>",       "<<",  opts)
+map("v",    "<Tab>",         ">gv", opts)
+map("v",    "<S-Tab>",       "<gv", opts)
+map("n",    "<C-t>",       ":NERDTreeToggle %<CR>", opts)
+map("n",    "[",       ":cprev<CR>", opts)
+map("n",    "]",       ":cnext<CR>", opts)
+map("n",    "<C-S-d>",       "v0yO<ESC>pjly$kgp[`", opts)
+vim.api.nvim_set_keymap("i", "<Tab>", 'pumvisible() ? "<C-y>" : "<Tab>"', { expr = true })
+vim.api.nvim_set_keymap("i", "<S-Tab>", 'pumvisible() ? "<C-n>" : "<C-d>"', { expr = true })
+map('n', 'H', '^')
+map('n', 'L', '$')
+map('n', 'J', '20j')
+map('n', 'K', '20k')
+map('i', '<C-H>', '<LEFT>')
+map('i', '<C-L>', '<RIGHT>')
+map('i', '<C-J>', '<DOWN>')
+map('i', '<C-K>', '<UP>')
+map('i', '<C-S-H>', '<ESC>^i')
+map('i', '<C-S-L>', '<ESC>$i')
+map('i', '<C-O>', '<ESC>o')
+map('i', '<C-S-O>', '<ESC>O')
+map('n', '<A-j>', ':m .+1<CR>==', { desc = 'Move line down' })
+map('n', '<A-k>', ':m .-2<CR>==', { desc = 'Move line up' })
+map('v', '<A-j>', ":m '>+1<CR>gv=gv", { desc = 'Move selection down' })
+map('v', '<A-k>', ":m '<-2<CR>gv=gv", { desc = 'Move selection up' })
+map('n', '<C-h>', '<C-w>h')
+map('n', '<C-l>', '<C-w>l')
+map('n', '<C-j>', '<C-w>j')
+map('n', '<C-k>', '<C-w>k')
+
+for _, bracket in ipairs { '()', '<>', '{}', '[]', '""', "''", '``', } do
+    map('i', bracket             , bracket .. '<left>'  , opts)
+    map('i', bracket .. '<CR>'   , bracket .. '<CR>'    , opts)
+    map('i', bracket .. '<Space>', bracket .. '<Space>' , opts)
+    map('i', bracket .. '.'      , bracket .. '.'       , opts)
+    map('i', bracket .. ':'      , bracket .. ':'       , opts)
+    map('i', bracket .. ','      , bracket .. ','       , opts)
+end
+
+map("v", ">", ">gv")
+map("v", "<", "<gv")
+map("n", "<C-/>", "gcc")
+map("n", "tc", ":CccPick<CR>")
+
+map('x', 'aa', function()
+    require'align'.align_to_char({
+        preview = true,
+        length = 1,
+    })
+end, NS)
+
+vim.g.VM_maps = {
+    ["Find Under"] = "<C-d>"
+}
+vim.api.nvim_set_keymap('n', '<C-p>', ':Files<CR>', { noremap = true, silent = true })
+vim.api.nvim_set_keymap('n', '<C-S-p>', ':RG<CR>', { noremap = true, silent = true })

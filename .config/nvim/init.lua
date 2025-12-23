@@ -123,19 +123,7 @@ end
 
 vim.api.nvim_set_keymap('n', 'gkk', 'lua FindMe()<CR>', { noremap = true, silent = true })
 
-
 -- Plugins --
--- install vim-plug via: sh -c 'curl -fLo "${XDG_DATA_HOME:-$HOME/.local/share}"/nvim/site/autoload/plug.vim --create-dirs https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim'
-vim.cmd [[
-call plug#begin()
-Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }
-Plug 'mg979/vim-visual-multi', {'branch': 'master'}
-
-Plug 'sitiom/nvim-numbertoggle'
-Plug 'uga-rosa/ccc.nvim'
-call plug#end()
-]]
-
 vim.pack.add {
     { src = 'https://github.com/neovim/nvim-lspconfig' },
     { src = 'https://github.com/preservim/nerdtree' },
@@ -145,6 +133,7 @@ vim.pack.add {
     { src = 'https://github.com/mireq/large_file' },
     { src = 'https://github.com/nvim-mini/mini.statusline' },
     { src = 'https://github.com/junegunn/fzf.vim' },
+        { src = 'https://github.com/junegunn/fzf' },
     { src = 'https://github.com/sindrets/diffview.nvim' },
 }
 
@@ -161,12 +150,6 @@ vim.keymap.set(
     NS
 )
 
-require('ccc').setup {
-    highlighter = {
-        auto_enable = true,
-        lsp = true,
-    },
-}
 require('Comment').setup()
 require('mini.statusline').setup()
 require("large_file").setup()

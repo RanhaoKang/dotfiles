@@ -53,15 +53,3 @@ function y() {
 trap "" SIGTSTP
 alias pac=pacman
 
-function vi() {
-    if [ -t 0 ]; then
-        # No content in stdin, behave like nvim
-        command bob run nightly "$@"
-    else
-        # Content in stdin, use xargs to pass it to nvim
-        xargs -o bos run nightly
-    fi
-}
-
-. ~/dotfiles/extract.sh
-

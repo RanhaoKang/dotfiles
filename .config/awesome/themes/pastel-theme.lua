@@ -48,10 +48,10 @@ theme.useless_gap = dpi(5)
 theme.gap_single_client = true
 
 -- Window Borders
-theme.border_width = dpi(5)
+theme.border_width = 2 -- dpi(0)
 theme.border_normal = theme.bg_normal
 theme.border_focus = "#ff0000"
-theme.border_marked = theme.fg_urgent
+-- theme.border_marked = theme.fg_urgent
 
 -- Taglist
 theme.taglist_bg_empty = theme.bg_normal
@@ -81,7 +81,7 @@ theme.bg_systray = theme.bg_normal
 theme.systray_icon_spacing = dpi(5)
 
 -- Titlebars
-theme.titlebars_enabled = true
+-- theme.titlebars_enabled = true
 
 
 -- ===================================================================
@@ -96,5 +96,5 @@ theme.layout_max = "~/.config/awesome/icons/layouts/maximized.png"
 
 theme.icon_theme = "Tela-dark"
 
--- return theme
 return theme
+

@@ -105,18 +105,6 @@ local function refresh_unity()
             naughty.notify {
                 text = ('refreshed %s'):format(c.class)
             }
-            -- gears.timer.start_new(0.05, function()
-            --     root.fake_input('key_press',   'F5')
-            --     root.fake_input('key_release', 'F5')
-            --     naughty.notify {
-            --         text = ('refreshed %s'):format(c.class)
-            --     }
-            --     -- if c_prev and c_prev.valid then
-            --     --     client.focus = c_prev
-            --     --     c_prev:raise()
-            --     -- end
-            --     return false
-            -- end)
             break
         end
     end
@@ -189,20 +177,6 @@ keys.globalkeys = gears.table.join(
    -- FUNCTION KEYS
    -- =========================================
 
-   -- Brightness
-   awful.key({}, "XF86MonBrightnessUp",
-      function()
-         awful.spawn("xbacklight -inc 10", false)
-      end,
-      {description = "+10%", group = "hotkeys"}
-   ),
-   awful.key({}, "XF86MonBrightnessDown",
-      function()
-         awful.spawn("xbacklight -dec 10", false)
-      end,
-      {description = "-10%", group = "hotkeys"}
-   ),
-
    -- ALSA volume control
    awful.key({}, "XF86AudioRaiseVolume",
       function()
@@ -227,13 +201,15 @@ keys.globalkeys = gears.table.join(
    ),
    awful.key({}, "XF86AudioNext",
       function()
-         awful.spawn("mpc next", false)
+         awful.spawn("ddcutil setvcp 10 + 10 -d 1", false)
+         awful.spawn("ddcutil setvcp 10 + 10 -d 2", false)
       end,
       {description = "next music", group = "hotkeys"}
    ),
    awful.key({}, "XF86AudioPrev",
       function()
-         awful.spawn("mpc prev", false)
+         awful.spawn("ddcutil setvcp 10 - 10 -d 1", false)
+         awful.spawn("ddcutil setvcp 10 - 10 -d 2", false)
       end,
       {description = "previous music", group = "hotkeys"}
    ),

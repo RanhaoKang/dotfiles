@@ -89,3 +89,20 @@ vim.api.nvim_create_autocmd('FileType', {
   end,
 })
 
+function Yua_CreateTest()
+  -- 1. Expand current file's directory
+  local current_file = vim.fn.expand('%:p')
+  
+  -- 2. Prompt for the new path (pre-filled with current directory)
+  local new_filename = current_file:gsub('Assets/Application/Scripts/Lua/' , 'scripts/test/')
+
+  -- 3. Extract directory part and create it if missing (mkdir -p)
+  local dir_to_create = vim.fn.fnamemodify(new_filename, ':h')
+  if vim.fn.isdirectory(dir_to_create) == 0 then
+    vim.fn.mkdir(dir_to_create, 'p')
+  end
+
+  -- 4. Open the new file path in the current buffer
+  vim.cmd('edit ' .. vim.fn.fnameescape(new_filename))
+end
+

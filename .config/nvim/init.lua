@@ -150,3 +150,12 @@ vim.g.VM_maps = {
 }
 vim.api.nvim_set_keymap('n', '<C-p>', ':Files<CR>', { noremap = true, silent = true })
 vim.api.nvim_set_keymap('n', '<C-S-p>', ':RG<CR>', { noremap = true, silent = true })
+vim.api.nvim_set_keymap('n', '::', ':Y ', { noremap = true, silent = true })
+
+-- command alias
+vim.api.nvim_create_user_command('Y', function(opts)
+    vim.notify("args: " .. opts.args)
+    if opts.args == 'test' then
+        Yua_CreateTest()
+    end
+end, { nargs = '*' })

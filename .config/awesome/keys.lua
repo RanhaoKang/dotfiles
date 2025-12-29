@@ -479,6 +479,14 @@ keys.clientkeys = gears.table.join(
          c:kill()
       end,
       {description = "close", group = "client"}
+   ),
+
+   -- we don't need this, but sometimes firefox maximizes itself
+   awful.key({modkey}, "m",
+      function(c)
+          c.maximized = false
+      end,
+      {description = "close", group = "client"}
    )
 )
 

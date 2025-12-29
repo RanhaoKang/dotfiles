@@ -105,6 +105,9 @@ function rules.create(clientkeys, clientbuttons)
          }, properties = {switchtotag = true}
       },
 
+      { rule = { class = "Firefox" },
+          properties = { maximized = false, maximized_vertical = false, maximized_horizontal = false } },
+
       -- Visualizer
       {
          rule_any = {name = {"cava"}},

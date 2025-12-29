@@ -77,6 +77,7 @@ require('Comment').setup()
 require('mini.statusline').setup()
 require("large_file").setup()
 require("diffview").setup()
+require("filelist").setup()
 require('colorful-winsep').setup {
     hi = { bg = '#16161E', fg = '#B3F6C0' },
     smooth = false,

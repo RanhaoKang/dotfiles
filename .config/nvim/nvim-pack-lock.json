@@ -9,7 +9,7 @@
       "src": "https://github.com/Vonr/align.nvim"
     },
     "blink.cmp": {
-      "rev": "7beba91fdc61fdc84ea6d6395d614671e609f895",
+      "rev": "b19413d214068f316c78978b08264ed1c41830ec",
       "src": "https://github.com/saghen/blink.cmp",
       "version": "1.0.0 - 2.0.0"
     },
@@ -26,11 +26,11 @@
       "src": "https://github.com/X3eRo0/dired.nvim"
     },
     "fzf": {
-      "rev": "603240122e300d146cbae6f0bc9c52a1017ac3c8",
+      "rev": "b29e2ee2d16bce269c4675a2030e7e550e13fb5c",
       "src": "https://github.com/junegunn/fzf"
     },
     "fzf.vim": {
-      "rev": "879db51d0965515cdaef9b7f6bdeb91c65d2829e",
+      "rev": "ddc14a6a5471147e2a38e6b32a7268282f669b0a",
       "src": "https://github.com/junegunn/fzf.vim"
     },
     "gruber-darker.nvim": {
@@ -46,7 +46,7 @@
       "src": "https://github.com/YacineDo/mc.nvim"
     },
     "mini.statusline": {
-      "rev": "14919901649d20d020e659c63c03baa75cd94f33",
+      "rev": "3e96596ebe51b899874d8174409cdc4f3c749d9a",
       "src": "https://github.com/nvim-mini/mini.statusline"
     },
     "nerdtree": {
@@ -58,8 +58,12 @@
       "src": "https://github.com/MunifTanjim/nui.nvim"
     },
     "nvim-lspconfig": {
-      "rev": "effe4bf2e1afb881ea67291c648b68dd3dfc927a",
+      "rev": "ac04ec3c2af08e9821b4eb64ede86072b9b213bf",
       "src": "https://github.com/neovim/nvim-lspconfig"
+    },
+    "vim-surround": {
+      "rev": "3d188ed2113431cf8dac77be61b842acb64433d9",
+      "src": "https://github.com/tpope/vim-surround"
     },
     "vim-visual-multi": {
       "rev": "a6975e7c1ee157615bbc80fc25e4392f71c344d4",

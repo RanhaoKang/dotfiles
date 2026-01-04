@@ -71,6 +71,7 @@ vim.pack.add {
         { src = 'https://github.com/junegunn/fzf' },
     { src = 'https://github.com/sindrets/diffview.nvim' },
     { src = 'https://github.com/blazkowolf/gruber-darker.nvim' },
+    { src = 'https://github.com/tpope/vim-surround' },
 }
 vim.cmd.colorscheme 'gruber-darker'
 require('Comment').setup()
@@ -91,6 +92,7 @@ require('hotreload').setup()
 require('diffviewer').setup()
 require('dired')
 require('languages.lua')
+require('languages.term')
 
 -- we define keymap at the bottom, as we do not want plugins flush our keymap
 
@@ -116,14 +118,18 @@ map('i', '<C-S-H>', '<ESC>^i')
 map('i', '<C-S-L>', '<ESC>$i')
 map('i', '<C-O>', '<ESC>o')
 map('i', '<C-S-O>', '<ESC>O')
-map('n', '<A-j>', ':m .+1<CR>==', { desc = 'Move line down' })
-map('n', '<A-k>', ':m .-2<CR>==', { desc = 'Move line up' })
-map('v', '<A-j>', ":m '>+1<CR>gv=gv", { desc = 'Move selection down' })
-map('v', '<A-k>', ":m '<-2<CR>gv=gv", { desc = 'Move selection up' })
+map('n', '<C-A-j>', ':m .+1<CR>==', { desc = 'Move line down' })
+map('n', '<C-A-k>', ':m .-2<CR>==', { desc = 'Move line up' })
+map('v', '<C-A-j>', ":m '>+1<CR>gv=gv", { desc = 'Move selection down' })
+map('v', '<C-A-k>', ":m '<-2<CR>gv=gv", { desc = 'Move selection up' })
 map('n', '<C-h>', '<C-w>h')
 map('n', '<C-l>', '<C-w>l')
 map('n', '<C-j>', '<C-w>j')
 map('n', '<C-k>', '<C-w>k')
+map('n', '<A-h>', '<C-w><')
+map('n', '<A-l>', '<C-w>>')
+map('n', '<A-j>', '<C-w>-')
+map('n', '<A-k>', '<C-w>+')
 
 for _, bracket in ipairs { '()', '<>', '{}', '[]', '""', "''", '``', } do
     map('i', bracket             , bracket .. '<left>'  , opts)
@@ -152,6 +158,15 @@ vim.g.VM_maps = {
 vim.api.nvim_set_keymap('n', '<C-p>', ':Files<CR>', { noremap = true, silent = true })
 vim.api.nvim_set_keymap('n', '<C-S-p>', ':RG<CR>', { noremap = true, silent = true })
 vim.api.nvim_set_keymap('n', '::', ':Y ', { noremap = true, silent = true })
+
+-- 在终端模式下按 Esc 回到普通模式
+vim.keymap.set('t', '<Esc>', [[<C-\><C-n>]], {noremap = true})
+
+-- 方便在终端和其他窗口间直接跳转
+vim.keymap.set('t', '<C-h>', [[<C-\><C-n><C-w>h]], {noremap = true})
+vim.keymap.set('t', '<C-j>', [[<C-\><C-n><C-w>j]], {noremap = true})
+vim.keymap.set('t', '<C-k>', [[<C-\><C-n><C-w>k]], {noremap = true})
+vim.keymap.set('t', '<C-l>', [[<C-\><C-n><C-w>l]], {noremap = true})
 
 -- command alias
 vim.api.nvim_create_user_command('Y', function(opts)

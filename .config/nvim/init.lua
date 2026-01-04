@@ -24,6 +24,9 @@ opt.pumheight = 7
 opt.scrolloff = 5
 opt.cursorline = true
 
+vim.g.mapleader = " "
+vim.g.maplocalleader = " "
+
 opt.completeopt = { 'menuone', 'noinsert', 'fuzzy' }
 
 -- Mapping --
@@ -167,6 +170,7 @@ vim.keymap.set('t', '<C-h>', [[<C-\><C-n><C-w>h]], {noremap = true})
 vim.keymap.set('t', '<C-j>', [[<C-\><C-n><C-w>j]], {noremap = true})
 vim.keymap.set('t', '<C-k>', [[<C-\><C-n><C-w>k]], {noremap = true})
 vim.keymap.set('t', '<C-l>', [[<C-\><C-n><C-w>l]], {noremap = true})
+vim.keymap.set({ 'n', 'v' }, '<Space>', '<Nop>', { silent = true })
 
 -- command alias
 vim.api.nvim_create_user_command('Y', function(opts)

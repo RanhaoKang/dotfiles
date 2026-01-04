@@ -71,6 +71,7 @@ vim.pack.add {
         { src = 'https://github.com/junegunn/fzf' },
     { src = 'https://github.com/sindrets/diffview.nvim' },
     { src = 'https://github.com/blazkowolf/gruber-darker.nvim' },
+    { src = 'https://github.com/tpope/vim-surround' },
 }
 vim.cmd.colorscheme 'gruber-darker'
 require('Comment').setup()

@@ -172,7 +172,33 @@ vim.keymap.set('t', '<C-k>', [[<C-\><C-n><C-w>k]], {noremap = true})
 vim.keymap.set('t', '<C-l>', [[<C-\><C-n><C-w>l]], {noremap = true})
 vim.keymap.set({ 'n', 'v' }, '<Space>', '<Nop>', { silent = true })
 
--- command alias
+local function toggle_bool_or_number(direction)
+  local word = vim.fn.expand("<cword>")
+  local bool_map = {
+    ["true"] = "false",
+    ["false"] = "true",
+    ["True"] = "False",
+    ["False"] = "True",
+    ["TRUE"] = "FALSE",
+    ["FALSE"] = "TRUE",
+  }
+
+  if bool_map[word] then
+    -- Using "ciw" to replace the boolean
+    vim.cmd("normal! ciw" .. bool_map[word])
+  else
+    -- Use vim.api.nvim_command to execute the default behavior 
+    -- 'count1' ensures it respects numbers like '5<C-a>'
+    local count = vim.v.count1
+    vim.cmd("normal! " .. count .. direction)
+  end
+end
+
+-- Keybindings
+-- We pass the exact key we want the 'normal' command to execute
+vim.keymap.set("n", "<C-a>", function() toggle_bool_or_number("\1") end, { desc = "Increment or toggle" })
+vim.keymap.set("n", "<C-x>", function() toggle_bool_or_number("\24") end, { desc = "Decrement or toggle" })-- command alias
+
 vim.api.nvim_create_user_command('Y', function(opts)
     vim.notify("args: " .. opts.args)
     if opts.args == 'test' then

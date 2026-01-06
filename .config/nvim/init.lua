@@ -88,6 +88,7 @@ require('oil').setup {
     keymaps = {
         ["gl"] = "actions.select",
         ["<C-p>"] = false,
+        ["<C-h>"] = false,
         ["<C-l>"] = false,
     },
 }

@@ -60,6 +60,7 @@ local function array_add()
     -- Position cursor after ' = ' (13 characters after variable insertion point)
     vim.fn.cursor(0, start_pos + #variable + 11 + #variable + 4)
 end
+
 -- Create the autocommand for Lua files
 local augroup = vim.api.nvim_create_augroup('LuaConceal', { clear = true })
 vim.api.nvim_create_autocmd('FileType', {
@@ -70,17 +71,19 @@ vim.api.nvim_create_autocmd('FileType', {
     vim.wo.conceallevel = 2 -- 0:none, 1:conceal in some syntax groups, 2:always
     vim.wo.concealcursor = ''
 
-    -- Rule 2: Conceal the 'function' keyword when followed by '()'
-    vim.fn.matchadd('Conceal', '\\vfunction\\ze\\s*\\(', 11, -1, { conceal = '' })
-    -- Rule 3: Conceal the 'end' keyword when it likely closes a lambda
-    -- This heuristic matches 'end' followed by ')', '}', or ','
-    -- vim.fn.matchadd('Conceal', '\function.*\v end\\ze\\s*[,})]', 11, -1, { conceal = '' })
-    vim.fn.matchadd('Conceal', '\\<return\\>\\s')
-    vim.fn.matchadd('Conceal', '\\<function\\>\\s')
-    vim.fn.matchadd('Conceal', '\\<function\\>\\ze\\s()')
-    vim.fn.matchadd('Conceal', [[\v\)\s*\zs return]], 10, -1, { conceal = '→' })
-    -- vim.fn.matchadd('Conceal', [[\vend\ze\s*[,})}]], 10, -1, { conceal = '' })
-    vim.fn.matchadd('Conceal', ' end\\ze\\s*,')
+    if not vim.env.EINK then
+        -- Rule 2: Conceal the 'function' keyword when followed by '()'
+        vim.fn.matchadd('Conceal', '\\vfunction\\ze\\s*\\(', 11, -1, { conceal = '' })
+        -- Rule 3: Conceal the 'end' keyword when it likely closes a lambda
+        -- This heuristic matches 'end' followed by ')', '}', or ','
+        -- vim.fn.matchadd('Conceal', '\function.*\v end\\ze\\s*[,})]', 11, -1, { conceal = '' })
+        vim.fn.matchadd('Conceal', '\\<return\\>\\s')
+        vim.fn.matchadd('Conceal', '\\<function\\>\\s')
+        vim.fn.matchadd('Conceal', '\\<function\\>\\ze\\s()')
+        vim.fn.matchadd('Conceal', [[\v\)\s*\zs return]], 10, -1, { conceal = '→' })
+        -- vim.fn.matchadd('Conceal', [[\vend\ze\s*[,})}]], 10, -1, { conceal = '' })
+        vim.fn.matchadd('Conceal', ' end\\ze\\s*,')
+    end
     map('i', '+=', self_cal'+')
     map('i', '-=', self_cal'-')
     map('i', '/=', self_cal'/')

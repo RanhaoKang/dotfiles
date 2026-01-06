@@ -2,9 +2,10 @@
 local opt = vim.opt
 opt.encoding = 'utf-8'
 opt.number = true
-opt.relativenumber = true
+if not vim.env.EINK then
+    opt.relativenumber = true
+end
 opt.clipboard = 'unnamedplus'
-opt.background = 'dark'
 opt.termguicolors = true
 opt.tabstop = 4
 opt.shiftwidth = 4
@@ -22,7 +23,6 @@ opt.foldmethod = "indent"
 opt.foldlevel = 4
 opt.pumheight = 7
 opt.scrolloff = 5
-opt.cursorline = true
 
 vim.g.mapleader = " "
 vim.g.maplocalleader = " "
@@ -77,7 +77,10 @@ vim.pack.add {
     { src = 'https://github.com/tpope/vim-surround' },
     { src = 'https://github.com/stevearc/oil.nvim' },
 }
-vim.cmd.colorscheme 'gruber-darker'
+
+if not vim.env.EINK then
+    vim.cmd.colorscheme 'gruber-darker'
+end
 require('Comment').setup()
 require('mini.statusline').setup()
 require("large_file").setup()
@@ -86,7 +89,7 @@ require("filelist").setup()
 require('oil').setup {
     columns = { 'permissions', 'size', 'mtime' },
     keymaps = {
-        ["gl"] = "actions.select",
+        ["o"] = "actions.select",
         ["<C-p>"] = false,
         ["<C-h>"] = false,
         ["<C-l>"] = false,

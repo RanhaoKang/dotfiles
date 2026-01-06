@@ -75,6 +75,7 @@ vim.pack.add {
     { src = 'https://github.com/sindrets/diffview.nvim' },
     { src = 'https://github.com/blazkowolf/gruber-darker.nvim' },
     { src = 'https://github.com/tpope/vim-surround' },
+    { src = 'https://github.com/stevearc/oil.nvim' },
 }
 vim.cmd.colorscheme 'gruber-darker'
 require('Comment').setup()
@@ -82,6 +83,9 @@ require('mini.statusline').setup()
 require("large_file").setup()
 require("diffview").setup()
 require("filelist").setup()
+require('oil').setup {
+    columns = { 'permissions', 'size', 'mtime' },
+}
 require('colorful-winsep').setup {
     hi = { bg = '#16161E', fg = '#B3F6C0' },
     smooth = false,
@@ -93,7 +97,6 @@ local map = vim.keymap.set
 
 require('hotreload').setup()
 require('diffviewer').setup()
-require('dired')
 require('languages.lua')
 require('languages.term')
 
@@ -205,3 +208,10 @@ vim.api.nvim_create_user_command('Y', function(opts)
         Yua_CreateTest()
     end
 end, { nargs = '*' })
+
+vim.cmd([[
+  command! W w
+  command! Q q
+  command! WQ wq
+  command! Wq wq
+]])

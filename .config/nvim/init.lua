@@ -85,6 +85,10 @@ require("diffview").setup()
 require("filelist").setup()
 require('oil').setup {
     columns = { 'permissions', 'size', 'mtime' },
+    keymaps = {
+        ["gl"] = "actions.select",
+        ["<C-p>"] = false,
+    },
 }
 require('colorful-winsep').setup {
     hi = { bg = '#16161E', fg = '#B3F6C0' },

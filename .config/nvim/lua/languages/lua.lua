@@ -41,9 +41,9 @@ local function self_cal(sign)
         local new_line
         local final_cursor_col
 
-        if sign == '++' or sign == '--' then
-            -- Handle ++ and -- (e.g. i++ -> i = i + 1)
-            local op = sign == '++' and '+' or '-'
+        if sign == '++' then
+            -- Handle ++ (e.g. i++ -> i = i + 1)
+            local op = '+'
             local replacement = variable .. ' = ' .. variable .. ' ' .. op .. ' 1'
             new_line = indent_part .. replacement .. rest_part
             final_cursor_col = start_pos + #replacement - 1 -- Cursor at end of line
@@ -190,7 +190,6 @@ vim.api.nvim_create_autocmd('FileType', {
     
     -- New Increment/Decrement maps
     map('i', '++', self_cal'++')
-    map('i', '--', self_cal'--')
 
     -- Array map
     map('i', '::a', array_add)

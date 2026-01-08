@@ -71,6 +71,8 @@ vim.pack.add {
     { src = 'https://github.com/blazkowolf/gruber-darker.nvim' },
     { src = 'https://github.com/nvim-mini/mini.surround' },
     { src = 'https://github.com/stevearc/oil.nvim' },
+    { src = 'https://github.com/NeogitOrg/neogit' },
+    { src = 'https://github.com/nvim-lua/plenary.nvim' },
 }
 
 if not vim.env.EINK then

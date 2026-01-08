@@ -72,8 +72,11 @@ vim.pack.add {
     { src = 'https://github.com/nvim-mini/mini.surround' },
     { src = 'https://github.com/stevearc/oil.nvim' },
     { src = 'https://github.com/NeogitOrg/neogit' },
-    { src = 'https://github.com/nvim-lua/plenary.nvim' },
+        { src = 'https://github.com/nvim-lua/plenary.nvim' },
+    { src = 'https://github.com/jake-stewart/multicursor.nvim' },
 }
+
+local map = vim.keymap.set
 
 if not vim.env.EINK then
     vim.cmd.colorscheme 'gruber-darker'
@@ -81,7 +84,27 @@ end
 require("mini.surround").setup()
 require("large_file").setup()
 require("diffview").setup()
-require("filelist").setup()
+local mc = require("multicursor-nvim")
+mc.setup()
+map({'n', 'v'}, '<C-S-j>', function() mc.lineAddCursor(1) end)
+mc.addKeymapLayer(function(layerSet)
+    -- Select a different cursor as the main one.
+    layerSet({"n", "x"}, "<left>", mc.prevCursor)
+    layerSet({"n", "x"}, "<right>", mc.nextCursor)
+
+    -- Delete the main cursor.
+    layerSet({"n", "x"}, "<leader>x", mc.deleteCursor)
+
+    -- Enable and clear cursors using escape.
+    layerSet("n", "<esc>", function()
+        if not mc.cursorsEnabled() then
+            mc.enableCursors()
+        else
+            mc.clearCursors()
+        end
+    end)
+end)
+
 require('oil').setup {
     -- columns = { 'permissions', 'size', 'mtime' },
     columns = { },
@@ -103,12 +126,11 @@ require('colorful-winsep').setup {
     smooth = false,
 }
 
-local map = vim.keymap.set
-
 -- custom plugins
 
 require('hotreload').setup()
 require('diffviewer').setup()
+require("filelist").setup()
 require('languages.lua')
 require('languages.term')
 

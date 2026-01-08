@@ -53,6 +53,10 @@
       "rev": "cc7b9d0a056b5fa6915ffac1cb91f29bf7c96f69",
       "src": "https://github.com/nvim-mini/mini.surround"
     },
+    "multicursor.nvim": {
+      "rev": "c982cc8375f062e9f98e96a408e0f7ad0c80d4db",
+      "src": "https://github.com/jake-stewart/multicursor.nvim"
+    },
     "neogit": {
       "rev": "d8bf9102692250193b855acd9025a826f1af2729",
       "src": "https://github.com/NeogitOrg/neogit"

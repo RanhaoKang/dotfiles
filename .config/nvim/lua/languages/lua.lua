@@ -197,8 +197,20 @@ vim.api.nvim_create_autocmd('FileType', {
     
     -- Snippet-like maps
     map('i', '::for', 'for i = 1, n do')
-    map('i', '::fn', function() vim.fn.setline('.', 'function() end') end)
-    map('i', 'fn', 'function')
+    -- 插入 function() end 并将光标移至中间
+    local function insert_lambda()
+        -- 插入文本：function() + 两个空格 + end
+        vim.api.nvim_put({'function()  end'}, 'c', false, true)
+        
+        -- 获取插入后的光标位置
+        local row, col = unpack(vim.api.nvim_win_get_cursor(0))
+        
+        -- 光标回退 4 位 (越过 " end")，停留在括号后的空格处
+        vim.api.nvim_win_set_cursor(0, {row, col - 4})
+    end
+
+    map('i', '->', insert_lambda)
+    map('i', '=>', insert_lambda)
 
     -- Smart Wrapper maps [New!]
     map('i', ':', smart_wrapper(':'))

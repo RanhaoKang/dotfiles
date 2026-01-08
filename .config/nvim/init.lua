@@ -69,13 +69,14 @@ vim.pack.add {
     { src = 'https://github.com/mireq/large_file' },
     { src = 'https://github.com/sindrets/diffview.nvim' },
     { src = 'https://github.com/blazkowolf/gruber-darker.nvim' },
-    { src = 'https://github.com/tpope/vim-surround' },
+    { src = 'https://github.com/nvim-mini/mini.surround' },
     { src = 'https://github.com/stevearc/oil.nvim' },
 }
 
 if not vim.env.EINK then
     vim.cmd.colorscheme 'gruber-darker'
 end
+require("mini.surround").setup()
 require("large_file").setup()
 require("diffview").setup()
 require("filelist").setup()

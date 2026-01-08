@@ -67,8 +67,6 @@ vim.pack.add {
     { src = 'https://github.com/nvim-zh/colorful-winsep.nvim' },
     { src = 'https://github.com/Vonr/align.nvim' },
     { src = 'https://github.com/mireq/large_file' },
-    { src = 'https://github.com/junegunn/fzf.vim' },
-        { src = 'https://github.com/junegunn/fzf' },
     { src = 'https://github.com/sindrets/diffview.nvim' },
     { src = 'https://github.com/blazkowolf/gruber-darker.nvim' },
     { src = 'https://github.com/tpope/vim-surround' },
@@ -159,8 +157,6 @@ end, NS)
 vim.g.VM_maps = {
     ["Find Under"] = "<C-d>"
 }
-vim.api.nvim_set_keymap('n', '<C-p>', ':Files<CR>', { noremap = true, silent = true })
-vim.api.nvim_set_keymap('n', '<C-S-p>', ':RG<CR>', { noremap = true, silent = true })
 vim.api.nvim_set_keymap('n', '::', ':Y ', { noremap = true, silent = true })
 
 -- 在终端模式下按 Esc 回到普通模式
@@ -221,3 +217,68 @@ vim.cmd([[
   command! WQ wq
   command! Wq wq
 ]])
+
+
+local function fzf_exec(cmd, callback)
+    -- 创建一个临时 Buffer
+    local buf = vim.api.nvim_create_buf(false, true)
+    
+    -- 计算窗口大小（居中浮动）
+    local width = math.floor(vim.o.columns * 0.8)
+    local height = math.floor(vim.o.lines * 0.8)
+    local win = vim.api.nvim_open_win(buf, true, {
+        relative = 'editor',
+        width = width,
+        height = height,
+        col = math.floor((vim.o.columns - width) / 2),
+        row = math.floor((vim.o.lines - height) / 2),
+        style = 'minimal',
+        border = 'rounded'
+    })
+
+    -- 选中的结果写入临时文件
+    local temp_file = os.tmpname()
+    
+    -- 运行终端命令
+    -- 关键点：fzf 结束后将结果写入临时文件并关闭窗口
+    vim.fn.termopen(cmd .. ' > ' .. temp_file, {
+        on_exit = function()
+            vim.api.nvim_win_close(win, true)
+            local f = io.open(temp_file, "r")
+            if f then
+                local result = f:read("*all"):gsub('\n', '')
+                f:close()
+                os.remove(temp_file)
+                if result ~= "" then
+                    callback(result)
+                end
+            end
+        end
+    })
+    
+    -- 进入插入模式（针对终端）
+    vim.cmd('startinsert')
+end
+
+-- 1. 替换 Files (找文件)
+vim.keymap.set('n', '<C-p>', function()
+    fzf_exec('fd --type f --hidden --exclude .git | fzf', function(result)
+        vim.cmd('edit ' .. result)
+    end)
+end)
+
+-- 2. 替换 Rg (搜内容)
+vim.keymap.set('n', '<C-S-p>', function()
+    -- 这里直接进入 fzf，因为 fzf 现在支持实时输入搜索
+    local cmd = 'rg --column --line-number --no-heading --color=always --smart-case "" | fzf --ansi'
+    fzf_exec(cmd, function(result)
+        -- rg 的结果格式是 file:line:col:text，我们需要提取文件名和行号
+        local parts = vim.split(result, ":")
+        if parts[1] then
+            vim.cmd('edit ' .. parts[1])
+            if parts[2] then
+                vim.api.nvim_win_set_cursor(0, {tonumber(parts[2]), 0})
+            end
+        end
+    end)
+end)

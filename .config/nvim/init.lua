@@ -64,12 +64,9 @@ vim.api.nvim_create_autocmd('LspAttach', {
 -- Plugins --
 vim.pack.add {
     { src = 'https://github.com/neovim/nvim-lspconfig' },
-    { src = 'https://github.com/preservim/nerdtree' },
-    { src = 'https://github.com/numToStr/Comment.nvim' },
     { src = 'https://github.com/nvim-zh/colorful-winsep.nvim' },
     { src = 'https://github.com/Vonr/align.nvim' },
     { src = 'https://github.com/mireq/large_file' },
-    { src = 'https://github.com/nvim-mini/mini.statusline' },
     { src = 'https://github.com/junegunn/fzf.vim' },
         { src = 'https://github.com/junegunn/fzf' },
     { src = 'https://github.com/sindrets/diffview.nvim' },
@@ -81,18 +78,23 @@ vim.pack.add {
 if not vim.env.EINK then
     vim.cmd.colorscheme 'gruber-darker'
 end
-require('Comment').setup()
-require('mini.statusline').setup()
 require("large_file").setup()
 require("diffview").setup()
 require("filelist").setup()
 require('oil').setup {
-    columns = { 'permissions', 'size', 'mtime' },
+    -- columns = { 'permissions', 'size', 'mtime' },
+    columns = { },
     keymaps = {
         ["o"] = "actions.select",
         ["<C-p>"] = false,
         ["<C-h>"] = false,
         ["<C-l>"] = false,
+        ["<C-t>"] = {
+            callback = function()
+                vim.cmd("q")
+            end,
+            desc = "Close Oil with :q",
+        },
     },
 }
 require('colorful-winsep').setup {
@@ -115,22 +117,14 @@ map("n",    "<Tab>",         ">>",  opts)
 map("n",    "<S-Tab>",       "<<",  opts)
 map("v",    "<Tab>",         ">gv", opts)
 map("v",    "<S-Tab>",       "<gv", opts)
-map("n",    "<C-t>",       ":NERDTreeToggle %<CR>", opts)
 map("n",    "[",       ":cprev<CR>", opts)
 map("n",    "]",       ":cnext<CR>", opts)
-map("n",    "<C-S-d>",       "v0yO<ESC>pjly$kgp[`", opts)
 vim.api.nvim_set_keymap("i", "<Tab>", 'pumvisible() ? "<C-y>" : "<Tab>"', { expr = true })
 vim.api.nvim_set_keymap("i", "<S-Tab>", 'pumvisible() ? "<C-n>" : "<C-d>"', { expr = true })
 map('n', 'H', '^')
 map('n', 'L', '$')
 map('n', 'J', '20j')
 map('n', 'K', '20k')
-map('i', '<C-H>', '<LEFT>')
-map('i', '<C-L>', '<RIGHT>')
-map('i', '<C-J>', '<DOWN>')
-map('i', '<C-K>', '<UP>')
-map('i', '<C-S-H>', '<ESC>^i')
-map('i', '<C-S-L>', '<ESC>$i')
 map('i', '<C-O>', '<ESC>o')
 map('i', '<C-S-O>', '<ESC>O')
 map('n', '<C-A-j>', ':m .+1<CR>==', { desc = 'Move line down' })
@@ -154,11 +148,6 @@ for _, bracket in ipairs { '()', '<>', '{}', '[]', '""', "''", '``', } do
     map('i', bracket .. ':'      , bracket .. ':'       , opts)
     map('i', bracket .. ','      , bracket .. ','       , opts)
 end
-
-map("v", ">", ">gv")
-map("v", "<", "<gv")
-map("n", "<C-/>", "gcc")
-map("n", "tc", ":CccPick<CR>")
 
 map('x', 'aa', function()
     require'align'.align_to_char({
@@ -217,6 +206,14 @@ vim.api.nvim_create_user_command('Y', function(opts)
         Yua_CreateTest()
     end
 end, { nargs = '*' })
+
+local open_oil_sidebar = function()
+  vim.cmd("vsplit")
+  vim.cmd("vertical resize 30")
+  require("oil").open(nil, { columns = { "icon" } })
+end
+
+map("n", "<C-t>", open_oil_sidebar, opts)
 
 vim.cmd([[
   command! W w

@@ -458,7 +458,7 @@ keys.clientkeys = gears.table.join(
    ),
 
    -- toggle fullscreen
-   awful.key({modkey}, "f",
+   awful.key({modkey}, "m",
       function(c)
          c.fullscreen = not c.fullscreen
       end,
@@ -482,7 +482,7 @@ keys.clientkeys = gears.table.join(
    ),
 
    -- we don't need this, but sometimes firefox maximizes itself
-   awful.key({modkey}, "m",
+   awful.key({modkey}, "f",
       function(c)
           c.maximized = not c.maximized
       end,

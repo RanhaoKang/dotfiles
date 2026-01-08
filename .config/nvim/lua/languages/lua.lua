@@ -89,6 +89,9 @@ vim.api.nvim_create_autocmd('FileType', {
     map('i', '/=', self_cal'/')
     map('i', '*=', self_cal'*')
     map('i', '::a', array_add)
+    map('i', '::for', 'for i = 1, n do')
+    map('i', '::fn', function() vim.fn.setline('.', 'function() end') end)
+    map('i', 'fn', 'function')
   end,
 })
 

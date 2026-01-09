@@ -74,6 +74,7 @@ vim.pack.add {
     { src = 'https://github.com/NeogitOrg/neogit' },
         { src = 'https://github.com/nvim-lua/plenary.nvim' },
     { src = 'https://github.com/jake-stewart/multicursor.nvim' },
+    { src = 'https://github.com/folke/zen-mode.nvim' },
 }
 
 local map = vim.keymap.set
@@ -284,6 +285,8 @@ local function fzf_exec(cmd, callback)
     -- 进入插入模式（针对终端）
     vim.cmd('startinsert')
 end
+
+map('n', '<C-f>', ':ZenMode<CR>')
 
 -- 1. 替换 Files (找文件)
 vim.keymap.set('n', '<C-p>', function()

@@ -1,0 +1,47 @@
+#!/bin/bash
+
+API_URL="http://localhost:6969/gemini-chat"
+MODEL="gemini-2.5-flash"
+LOG_FILE="/home/yua/.log/$(date +%Y-%m-%d_%H-%M-%S).log"
+
+if [ -p /dev/stdin ]; then
+    STDIN_CONTENT=$(cat -)
+fi
+
+USER_PROMPT="$1"
+
+# Add strict instructions if running inside Vim
+if [ -n "$VIMRUNTIME" ]; then
+    STRICT_FORMAT="[STRICT: Output ONLY raw code. No markdown, no comments, no emojis, no explanations.] "
+    USER_PROMPT="${STRICT_FORMAT}${USER_PROMPT}"
+fi
+
+FINAL_MESSAGE="${USER_PROMPT}
+
+Context/Input:
+${STDIN_CONTENT}"
+
+# Save Input to Log
+echo "--- INPUT ---" > "$LOG_FILE"
+echo "$FINAL_MESSAGE" >> "$LOG_FILE"
+echo -e "\n--- OUTPUT ---" >> "$LOG_FILE"
+
+# API Call
+RESPONSE=$(curl -s -X 'POST' "$API_URL" \
+     -H 'accept: application/json' \
+     -H 'Content-Type: application/json' \
+     -d "$(jq -n --arg msg "$FINAL_MESSAGE" --arg model "$MODEL" \
+        '{message: $msg, model: $model, files: []}')" | \
+     jq -r '.response // .choices[0].message.content // .')
+
+# Handle Output based on Environment
+if [ -n "$VIMRUNTIME" ]; then
+    # In Vim: Plain text only, no pager, append output to log then stdout
+    echo "$RESPONSE" >> "$LOG_FILE"
+    echo "$RESPONSE"
+else
+    # In Shell: Use glow and less
+    echo "$RESPONSE" >> "$LOG_FILE"
+    echo "$RESPONSE" | glow | less -R
+fi
+

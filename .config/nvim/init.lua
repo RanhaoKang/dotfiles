@@ -75,6 +75,7 @@ vim.pack.add {
         { src = 'https://github.com/nvim-lua/plenary.nvim' },
     { src = 'https://github.com/jake-stewart/multicursor.nvim' },
     { src = 'https://github.com/folke/zen-mode.nvim' },
+    { src = 'https://github.com/ibhagwan/fzf-lua' },
 }
 
 local map = vim.keymap.set
@@ -242,6 +243,7 @@ vim.cmd([[
   command! Q q
   command! WQ wq
   command! Wq wq
+  command! Qa qa
 ]])
 
 
@@ -290,23 +292,25 @@ map('n', '<C-f>', ':ZenMode<CR>')
 
 -- 1. 替换 Files (找文件)
 vim.keymap.set('n', '<C-p>', function()
-    fzf_exec('fd --type f --hidden --exclude .git | fzf', function(result)
-        vim.cmd('edit ' .. result)
-    end)
+    require('fzf-lua').files({
+        -- 1. 关闭预览界面
+        previewer = false,
+        
+        -- 2. 这里的搜索提示符
+        prompt = 'Files> ',
+        
+        -- 3. 搜索特定类型的文件 (例如只搜 .lua 和 .js)
+        -- -g 是 rg (ripgrep) 的 glob 参数，用于匹配文件名
+        -- 如果你想搜所有文件但排除某些，也可以在这里配置
+        -- rg_opts = "--column --line-number --no-heading --color=always --smart-case --max-columns=4096 -e",
+        -- fd_opts = "--color=always --type f --hidden --follow --exclude .git -e lua -e txt -e cs",
+    })
+    -- fzf_exec('fd --type f --hidden --exclude .git | fzf', function(result)
+    --     vim.cmd('edit ' .. result)
+    -- end)
 end)
 
 -- 2. 替换 Rg (搜内容)
 vim.keymap.set('n', '<C-S-p>', function()
-    -- 这里直接进入 fzf，因为 fzf 现在支持实时输入搜索
-    local cmd = 'rg --column --line-number --no-heading --color=always --smart-case "" | fzf --ansi'
-    fzf_exec(cmd, function(result)
-        -- rg 的结果格式是 file:line:col:text，我们需要提取文件名和行号
-        local parts = vim.split(result, ":")
-        if parts[1] then
-            vim.cmd('edit ' .. parts[1])
-            if parts[2] then
-                vim.api.nvim_win_set_cursor(0, {tonumber(parts[2]), 0})
-            end
-        end
-    end)
+    require('fzf-lua').live_grep()
 end)

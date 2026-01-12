@@ -8,7 +8,7 @@ if [ -p /dev/stdin ]; then
     STDIN_CONTENT=$(cat -)
 fi
 
-USER_PROMPT="$1"
+USER_PROMPT="$*"
 
 # Add strict instructions if running inside Vim
 if [ -n "$VIMRUNTIME" ]; then

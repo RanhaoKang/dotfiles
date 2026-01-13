@@ -45,6 +45,10 @@
       "rev": "98a2e141981cbd5a194a97eae024bf55af854579",
       "src": "https://github.com/blazkowolf/gruber-darker.nvim"
     },
+    "iron.nvim": {
+      "rev": "0e07ace465edff6c4ed6db9f3b7bf919c40aeffb",
+      "src": "https://github.com/Vigemus/iron.nvim"
+    },
     "large_file": {
       "rev": "d9740134f80994d56f50e2931ba9307f49e420dc",
       "src": "https://github.com/mireq/large_file"

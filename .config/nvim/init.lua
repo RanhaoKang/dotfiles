@@ -76,6 +76,7 @@ vim.pack.add {
     { src = 'https://github.com/jake-stewart/multicursor.nvim' },
     { src = 'https://github.com/folke/zen-mode.nvim' },
     { src = 'https://github.com/ibhagwan/fzf-lua' },
+    { src = 'https://github.com/Vigemus/iron.nvim' },
 }
 
 local map = vim.keymap.set
@@ -126,6 +127,32 @@ require('oil').setup {
 require('colorful-winsep').setup {
     hi = { bg = '#16161E', fg = '#B3F6C0' },
     smooth = false,
+}
+require('iron.core').setup {
+    keymaps = {
+        toggle_repl = "<space>rr", -- toggles the repl open and closed.
+        -- If repl_open_command is a table as above, then the following keymaps are
+        -- available
+        -- toggle_repl_with_cmd_1 = "<space>rv",
+        -- toggle_repl_with_cmd_2 = "<space>rh",
+        restart_repl = "<space>rR", -- calls `IronRestart` to restart the repl
+        send_motion = "<space>sc",
+        visual_send = "<space>sc",
+        send_file = "<space>sf",
+        send_line = "<space>sl",
+        send_paragraph = "<space>sp",
+        send_until_cursor = "<space>su",
+        send_mark = "<space>sm",
+        send_code_block = "<space>sb",
+        send_code_block_and_move = "<space>sn",
+        mark_motion = "<space>mc",
+        mark_visual = "<space>mc",
+        remove_mark = "<space>md",
+        cr = "<space>s<cr>",
+        interrupt = "<space>s<space>",
+        exit = "<space>sq",
+        clear = "<space>cl",
+  },
 }
 
 -- custom plugins
@@ -245,48 +272,6 @@ vim.cmd([[
   command! Wq wq
   command! Qa qa
 ]])
-
-
-local function fzf_exec(cmd, callback)
-    -- 创建一个临时 Buffer
-    local buf = vim.api.nvim_create_buf(false, true)
-    
-    -- 计算窗口大小（居中浮动）
-    local width = math.floor(vim.o.columns * 0.8)
-    local height = math.floor(vim.o.lines * 0.8)
-    local win = vim.api.nvim_open_win(buf, true, {
-        relative = 'editor',
-        width = width,
-        height = height,
-        col = math.floor((vim.o.columns - width) / 2),
-        row = math.floor((vim.o.lines - height) / 2),
-        style = 'minimal',
-        border = 'rounded'
-    })
-
-    -- 选中的结果写入临时文件
-    local temp_file = os.tmpname()
-    
-    -- 运行终端命令
-    -- 关键点：fzf 结束后将结果写入临时文件并关闭窗口
-    vim.fn.termopen(cmd .. ' > ' .. temp_file, {
-        on_exit = function()
-            vim.api.nvim_win_close(win, true)
-            local f = io.open(temp_file, "r")
-            if f then
-                local result = f:read("*all"):gsub('\n', '')
-                f:close()
-                os.remove(temp_file)
-                if result ~= "" then
-                    callback(result)
-                end
-            end
-        end
-    })
-    
-    -- 进入插入模式（针对终端）
-    vim.cmd('startinsert')
-end
 
 map('n', '<C-f>', ':ZenMode<CR>')
 

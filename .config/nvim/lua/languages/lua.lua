@@ -212,9 +212,9 @@ vim.api.nvim_create_autocmd('FileType', {
     map('i', '=>', insert_lambda)
 
     -- Smart Wrapper maps [New!]
-    map('i', ':', smart_wrapper(':'))
-    map('i', '[', smart_wrapper('['))
-    map('i', '(', smart_wrapper('('))
+    -- map('i', ':', smart_wrapper(':'))
+    -- map('i', '[', smart_wrapper('['))
+    -- map('i', '(', smart_wrapper('('))
   end,
 })
 

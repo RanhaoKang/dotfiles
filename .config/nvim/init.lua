@@ -299,3 +299,68 @@ end)
 vim.keymap.set('n', '<C-S-p>', function()
     require('fzf-lua').live_grep()
 end)
+
+-- 定义核心函数
+local function extract_lua_block()
+    local bufnr = vim.api.nvim_get_current_buf()
+    local start_line = vim.api.nvim_win_get_cursor(0)[1] - 1 -- 0-indexed
+    local total_lines = vim.api.nvim_buf_line_count(bufnr)
+
+    -- 1. 获取当前文件名（不含路径和后缀），例如 "PlayerManager"
+    local file_name = vim.fn.expand("%:t:r"):gsub("%.lua", "")
+    
+    local current_content = ""
+    local lines_to_save = {}
+    local is_complete = false
+
+    for i = start_line, total_lines - 1 do
+        local line = vim.api.nvim_buf_get_lines(bufnr, i, i + 1, false)[1]
+
+        -- 特殊逻辑：如果是起始行，检查是否匹配 "function Manager"
+        if i == start_line then
+            -- 匹配 "function Manager:..." 或 "function Manager. ..."
+            -- %s+ 匹配空格，([:.].+) 捕获后续的方法名部分
+            local new_line, count = line:gsub("function%s+Manager([:%.].+)", "function " .. file_name .. "%1")
+            if count > 0 then
+                line = new_line
+            end
+        end
+
+        table.insert(lines_to_save, line)
+        current_content = table.concat(lines_to_save, "\n")
+
+        -- 使用 load 尝试编译代码块
+        -- load 返回 (function, error_message)
+        local _, err = load(current_content)
+
+        if not err then
+            -- 编译成功，代码块完整
+            is_complete = true
+            break
+        elseif not string.find(err, "<eof>") then
+            -- 如果有报错但不是 EOF 报错，说明是语法错误，我们也停止读取
+            print("Lua Syntax Error: " .. err)
+            return
+        end
+        -- 如果是 EOF 报错，继续循环读下一行
+    end
+
+    if is_complete then
+        local filename = "Assets/Application/Scripts/Lua/Application/Utility/HotReload.lua.txt"
+        local file = io.open(filename, "a")
+        if file then
+            file:write('\n ; \n')
+            file:write(current_content)
+            file:close()
+            print("Successfully saved block to " .. filename)
+        else
+            print("Error: Could not write to " .. filename)
+        end
+    else
+        print("Error: Reached end of file without finding a complete Lua block.")
+    end
+end
+
+-- 绑定快捷键 <D-h> (macOS 的 Command 键通常对应 D)
+-- 如果你在 Linux/Windows 上使用 Super 键，可能需要根据终端模拟器调整
+vim.keymap.set('n', '<C-s>', extract_lua_block, { desc = 'Extract Lua block to test.lua' })

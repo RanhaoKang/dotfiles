@@ -85,6 +85,10 @@
       "rev": "ac04ec3c2af08e9821b4eb64ede86072b9b213bf",
       "src": "https://github.com/neovim/nvim-lspconfig"
     },
+    "nvim-spider": {
+      "rev": "c7a9b4a9dab9b8f0ea441a942175b365a92a28ad",
+      "src": "https://github.com/chrisgrieser/nvim-spider"
+    },
     "oil.nvim": {
       "rev": "81b8a91735ad5cd24a6b3137f14a89f19176364f",
       "src": "https://github.com/stevearc/oil.nvim"

@@ -77,7 +77,7 @@ vim.pack.add {
     { src = 'https://github.com/folke/zen-mode.nvim' },
     { src = 'https://github.com/ibhagwan/fzf-lua' },
     { src = 'https://github.com/Vigemus/iron.nvim' },
-    { src = 'https://github.com/aserowy/tmux.nvim' },
+    { src = 'https://github.com/chrisgrieser/nvim-spider' },
 }
 
 local map = vim.keymap.set
@@ -86,7 +86,6 @@ if not vim.env.EINK then
     vim.cmd.colorscheme 'gruber-darker'
 end
 require("mini.surround").setup()
-require("tmux").setup()
 require("large_file").setup()
 require("diffview").setup()
 local mc = require("multicursor-nvim")
@@ -157,6 +156,24 @@ require('iron.core').setup {
   },
 }
 
+require("spider").setup({
+	skipInsignificantPunctuation = true, -- 跳过不重要的标点符号
+})
+
+local spider_map = function(key, motion)
+    vim.keymap.set({ "n", "o", "x" }, key, function()
+        require("spider").motion(motion)
+    end, { desc = "Spider Motion " .. motion })
+end
+
+spider_map("w", "w")
+spider_map("e", "e")
+spider_map("b", "b")
+
+vim.keymap.set({ "n", "o", "x" }, "W", "w", { desc = "Native WORD forward" })
+vim.keymap.set({ "n", "o", "x" }, "E", "e", { desc = "Native WORD end" })
+vim.keymap.set({ "n", "o", "x" }, "B", "b", { desc = "Native WORD backward" })
+
 -- custom plugins
 
 require('hotreload').setup()
@@ -185,10 +202,10 @@ map('n', '<C-A-j>', ':m .+1<CR>==', { desc = 'Move line down' })
 map('n', '<C-A-k>', ':m .-2<CR>==', { desc = 'Move line up' })
 map('v', '<C-A-j>', ":m '>+1<CR>gv=gv", { desc = 'Move selection down' })
 map('v', '<C-A-k>', ":m '<-2<CR>gv=gv", { desc = 'Move selection up' })
--- map('n', '<C-h>', '<C-w>h')
--- map('n', '<C-l>', '<C-w>l')
--- map('n', '<C-j>', '<C-w>j')
--- map('n', '<C-k>', '<C-w>k')
+map('n', '<C-h>', '<C-w>h')
+map('n', '<C-l>', '<C-w>l')
+map('n', '<C-j>', '<C-w>j')
+map('n', '<C-k>', '<C-w>k')
 map('n', '<A-h>', '<C-w><')
 map('n', '<A-l>', '<C-w>>')
 map('n', '<A-j>', '<C-w>-')

@@ -34,6 +34,29 @@
                     "m_Modifiers": 0
                 }
             ]
+        },
+        {
+            "identifier": {
+                "path": "Main Menu/Window/General/Services"
+            },
+            "combinations": []
+        },
+        {
+            "identifier": {
+                "path": "Main Menu/Unity/Hide Unity"
+            },
+            "combinations": []
+        },
+        {
+            "identifier": {
+                "path": "Main Menu/Tools/Unity Dashboard"
+            },
+            "combinations": [
+                {
+                    "m_KeyCode": 100,
+                    "m_Modifiers": 8
+                }
+            ]
         }
     ]
 }

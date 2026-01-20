@@ -77,6 +77,7 @@ vim.pack.add {
     { src = 'https://github.com/folke/zen-mode.nvim' },
     { src = 'https://github.com/ibhagwan/fzf-lua' },
     { src = 'https://github.com/Vigemus/iron.nvim' },
+    { src = 'https://github.com/aserowy/tmux.nvim' },
 }
 
 local map = vim.keymap.set
@@ -85,6 +86,7 @@ if not vim.env.EINK then
     vim.cmd.colorscheme 'gruber-darker'
 end
 require("mini.surround").setup()
+require("tmux").setup()
 require("large_file").setup()
 require("diffview").setup()
 local mc = require("multicursor-nvim")
@@ -183,10 +185,10 @@ map('n', '<C-A-j>', ':m .+1<CR>==', { desc = 'Move line down' })
 map('n', '<C-A-k>', ':m .-2<CR>==', { desc = 'Move line up' })
 map('v', '<C-A-j>', ":m '>+1<CR>gv=gv", { desc = 'Move selection down' })
 map('v', '<C-A-k>', ":m '<-2<CR>gv=gv", { desc = 'Move selection up' })
-map('n', '<C-h>', '<C-w>h')
-map('n', '<C-l>', '<C-w>l')
-map('n', '<C-j>', '<C-w>j')
-map('n', '<C-k>', '<C-w>k')
+-- map('n', '<C-h>', '<C-w>h')
+-- map('n', '<C-l>', '<C-w>l')
+-- map('n', '<C-j>', '<C-w>j')
+-- map('n', '<C-k>', '<C-w>k')
 map('n', '<A-h>', '<C-w><')
 map('n', '<A-l>', '<C-w>>')
 map('n', '<A-j>', '<C-w>-')

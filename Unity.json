@@ -1,0 +1,39 @@
+{
+    "m_Id": "Yua",
+    "m_ParentId": "",
+    "m_Entries": [
+        {
+            "identifier": {
+                "path": "Main Menu/Edit/Play"
+            },
+            "combinations": [
+                {
+                    "m_KeyCode": 114,
+                    "m_Modifiers": 8
+                }
+            ]
+        },
+        {
+            "identifier": {
+                "path": "Window/Maximize View"
+            },
+            "combinations": [
+                {
+                    "m_KeyCode": 102,
+                    "m_Modifiers": 8
+                }
+            ]
+        },
+        {
+            "identifier": {
+                "path": "Main Menu/Edit/Find"
+            },
+            "combinations": [
+                {
+                    "m_KeyCode": 47,
+                    "m_Modifiers": 0
+                }
+            ]
+        }
+    ]
+}

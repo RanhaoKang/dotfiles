@@ -35,15 +35,6 @@ vim.api.nvim_create_user_command('Make ui', ':!cat scripts/dev/template/ui.lua >
     nargs = 1,
 })
 
-vim.lsp.config['pylsp'] = {
-    cmd = { 'pylsp' },
-    filetypes = { 'python' },
-    capabilities = vim.lsp.protocol.make_client_capabilities()
-}
-vim.lsp.enable('pylsp')
-
-
-
 vim.api.nvim_create_autocmd({"BufRead", "BufNewFile"}, {
     pattern = {"*.lua.txt", "*.lua", '*.script', '*.gui_script', '*.render_script' },
     callback = function()
@@ -188,6 +179,7 @@ require('hotreload').setup()
 require('diffviewer').setup()
 require("filelist").setup()
 require('languages.lua')
+require('languages.python')
 require('languages.term')
 
 -- we define keymap at the bottom, as we do not want plugins flush our keymap

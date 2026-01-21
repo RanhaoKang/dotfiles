@@ -383,3 +383,4 @@ end
 -- 绑定快捷键 <D-h> (macOS 的 Command 键通常对应 D)
 -- 如果你在 Linux/Windows 上使用 Super 键，可能需要根据终端模拟器调整
 vim.keymap.set('n', '<C-s>', extract_lua_block, { desc = 'Extract Lua block to test.lua' })
+vim.api.nvim_set_hl(0, "Folded", { bg = "none", fg = "#666666", italic = true })

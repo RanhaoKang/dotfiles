@@ -129,7 +129,15 @@ require('colorful-winsep').setup {
     hi = { bg = '#16161E', fg = '#B3F6C0' },
     smooth = false,
 }
+
+local view = require("iron.view")
 require('iron.core').setup {
+    config = {
+        repl_definition = {
+            sql = { command = {"psql" } },
+        },
+        repl_open_cmd = view.split.vertical.rightbelow("%30"),
+    },
     keymaps = {
         toggle_repl = "<space>rr", -- toggles the repl open and closed.
         -- If repl_open_command is a table as above, then the following keymaps are

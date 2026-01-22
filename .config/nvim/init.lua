@@ -69,8 +69,8 @@ vim.pack.add {
     { src = 'https://github.com/ibhagwan/fzf-lua' },
     { src = 'https://github.com/Vigemus/iron.nvim' },
     { src = 'https://github.com/chrisgrieser/nvim-spider' },
+    { src = 'https://github.com/aserowy/tmux.nvim' }
 }
-
 local map = vim.keymap.set
 
 if not vim.env.EINK then
@@ -79,6 +79,7 @@ end
 require("mini.surround").setup()
 require("large_file").setup()
 require("diffview").setup()
+require("tmux").setup()
 local mc = require("multicursor-nvim")
 mc.setup()
 map({'n', 'v'}, '<C-S-j>', function() mc.lineAddCursor(1) end)
@@ -126,6 +127,7 @@ require('iron.core').setup {
     config = {
         repl_definition = {
             sql = { command = {"psql" } },
+            ai = { command = { "agrepl" } },
         },
         repl_open_cmd = view.split.vertical.rightbelow("%30"),
     },
@@ -202,10 +204,6 @@ map('n', '<C-A-j>', ':m .+1<CR>==', { desc = 'Move line down' })
 map('n', '<C-A-k>', ':m .-2<CR>==', { desc = 'Move line up' })
 map('v', '<C-A-j>', ":m '>+1<CR>gv=gv", { desc = 'Move selection down' })
 map('v', '<C-A-k>', ":m '<-2<CR>gv=gv", { desc = 'Move selection up' })
-map('n', '<C-h>', '<C-w>h')
-map('n', '<C-l>', '<C-w>l')
-map('n', '<C-j>', '<C-w>j')
-map('n', '<C-k>', '<C-w>k')
 map('n', '<A-h>', '<C-w><')
 map('n', '<A-l>', '<C-w>>')
 map('n', '<A-j>', '<C-w>-')

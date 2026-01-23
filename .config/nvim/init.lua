@@ -55,7 +55,6 @@ vim.api.nvim_create_autocmd('LspAttach', {
 -- Plugins --
 vim.pack.add {
     { src = 'https://github.com/neovim/nvim-lspconfig' },
-    { src = 'https://github.com/nvim-zh/colorful-winsep.nvim' },
     { src = 'https://github.com/Vonr/align.nvim' },
     { src = 'https://github.com/mireq/large_file' },
     { src = 'https://github.com/sindrets/diffview.nvim' },
@@ -116,10 +115,6 @@ require('oil').setup {
             desc = "Close Oil with :q",
         },
     },
-}
-require('colorful-winsep').setup {
-    hi = { bg = '#16161E', fg = '#B3F6C0' },
-    smooth = false,
 }
 
 local view = require("iron.view")

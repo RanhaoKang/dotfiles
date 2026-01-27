@@ -4,7 +4,6 @@ import sys
 import os
 import json
 import subprocess
-import tempfile
 import re
 from pathlib import Path
 from datetime import datetime
@@ -17,22 +16,33 @@ LOG_DIR = Path.home() / ".log"
 LOG_DIR.mkdir(exist_ok=True)
 LOG_FILE = LOG_DIR / f"{datetime.now().strftime('%Y-%m-%d_%H-%M-%S')}.log"
 
-def extract_code_block(text: str) -> str:
-    """
-    核心截断逻辑：如果发现 Markdown 代码块，只提取第一个代码块内部的内容。
-    """
-    # 匹配 ```lang ... ``` 格式
-    pattern = r"```(?:\w+)?\n(.*?)```"
+def extract_clean_code(text: str) -> str:
+    """提取第一个代码块内容，并强制移除末尾残留的反引号"""
+    text = text.strip()
+    # 尝试提取 ```...``` 内部
+    pattern = r"```(?:\w+)?\n(.*?)\n```"
     match = re.search(pattern, text, re.DOTALL)
+    
     if match:
-        return match.group(1).strip()
-    return text.strip()
+        content = match.group(1)
+    else:
+        # 如果只有开头没有结尾，剥离第一行
+        lines = text.splitlines()
+        if lines and lines[0].startswith("```"):
+            content = "\n".join(lines[1:])
+        else:
+            content = text
+
+    # 针对你遇到的 return class``` 情况：
+    # 移除任何行末及之后出现的反引号
+    content = re.sub(r'```.*$', '', content, flags=re.MULTILINE).strip()
+    return content
 
 def main():
-    # --- 参数解析 ---
     output_format = ""
     user_prompt_parts = []
     
+    # 1. 参数解析
     args = sys.argv[1:]
     i = 0
     while i < len(args):
@@ -44,118 +54,72 @@ def main():
             i += 1
     
     user_prompt = " ".join(user_prompt_parts)
+    is_vim = "VIMRUNTIME" in os.environ
+    last_file = Path.home() / ".ag-last"
 
-    # --- 读取标准输入 ---
+    # 2. 读取标准输入
     stdin_content = ""
     if not sys.stdin.isatty():
         stdin_content = sys.stdin.read()
 
-    # 如果无输入，则查看历史
+    # 3. 历史记录逻辑 (修复点)
     if not user_prompt and not stdin_content:
-        last_file = Path.home() / ".ag-last"
         if last_file.exists():
-            try:
-                subprocess.run(["glow", str(last_file)], check=False)
-            except FileNotFoundError:
-                print(last_file.read_text())
+            content = last_file.read_text()
+            if output_format or is_vim:
+                # 带 -o 或者在 Vim 里，直接输出纯文本
+                sys.stdout.write(content)
+            else:
+                # 否则用 glow
+                try:
+                    subprocess.run(["glow", "-s", "dark"], input=content.encode(), check=False)
+                except FileNotFoundError:
+                    print(content)
         return 0
 
-    # --- 系统提示词处理 ---
-    # 强制让模型意识到它只需要输出纯代码
-    is_vim = "VIMRUNTIME" in os.environ
-    system_prompts = []
-    
-    if is_vim or output_format:
-        system_prompts.append("Output ONLY raw code. No explanations, no preamble, no conversational fillers.")
-    
-    if output_format:
-        system_prompts.append(f"Output valid {output_format} only.")
-
-    system_prompt = " ".join(system_prompts)
-
-    # --- 构建消息体 ---
-    final_message = user_prompt
-    if stdin_content:
-        final_message = f"{user_prompt}\n\n[Context/Input]:\n{stdin_content}"
-
-    # --- 调用 API ---
+    # 4. API 调用准备
     api_key = os.environ.get("DEEPSEEK_API_KEY")
     if not api_key:
-        print("Error: DEEPSEEK_API_KEY environment variable not set", file=sys.stderr)
+        print("Error: DEEPSEEK_API_KEY not set", file=sys.stderr)
         return 1
 
+    sys_msgs = ["Output ONLY raw code. No explanations."]
+    if output_format:
+        sys_msgs.append(f"Output valid {output_format} only.")
+    
     payload = {
         "model": MODEL,
         "messages": [
-            {"role": "system", "content": system_prompt},
-            {"role": "user", "content": final_message}
+            {"role": "system", "content": " ".join(sys_msgs)},
+            {"role": "user", "content": f"{user_prompt}\n\n{stdin_content}".strip()}
         ],
-        "temperature": 0.2  # 降低随机性，使输出更稳定
+        "temperature": 0.1
     }
 
     try:
-        response = requests.post(API_URL, 
-                                 headers={"Authorization": f"Bearer {api_key}"}, 
-                                 json=payload, 
-                                 timeout=45)
-        response.raise_for_status()
-        raw_response = response.json()
+        resp = requests.post(API_URL, headers={"Authorization": f"Bearer {api_key}"}, json=payload, timeout=30)
+        resp.raise_for_status()
+        raw_content = resp.json()["choices"][0]["message"]["content"]
     except Exception as e:
-        print(f"Error calling API: {e}", file=sys.stderr)
+        print(f"API Error: {e}", file=sys.stderr)
         return 1
 
-    # 日志记录 (异步思维：先拿数据再记日志)
-    with open(LOG_FILE, "w") as f:
-        json.dump({"payload": payload, "response": raw_response}, f, indent=2)
-
-    # 提取内容
-    if "choices" in raw_response:
-        clean_output = raw_response["choices"][0]["message"]["content"]
-    else:
-        print(f"API Error: {raw_response}", file=sys.stderr)
-        return 1
-
-    # --- 截断逻辑应用 ---
-    # 如果指定了 -o 或者在 Vim 环境下，应用严格截断
-    if output_format or is_vim:
-        clean_output = extract_code_block(clean_output)
-
-    # --- 语法校验 ---
-    valid_code = True
-    if output_format == "json":
-        try:
-            json.loads(clean_output)
-        except: valid_code = False
-    elif output_format == "python":
-        try:
-            compile(clean_output, '<string>', 'exec')
-        except: valid_code = False
-    elif output_format == "lua":
-        # 尝试使用 luac 检查
-        try:
-            subprocess.run(["luac", "-p", "-"], input=clean_output.encode(), 
-                           check=True, capture_output=True)
-        except: valid_code = False
-
-    if output_format and not valid_code:
-        print(f"\033[0;31m! Warning: Syntax check failed for {output_format}\033[0m", file=sys.stderr)
-
-    # --- 持久化与输出 ---
-    last_file = Path.home() / ".ag-last"
+    # 5. 清洗与校验
+    clean_output = extract_clean_code(raw_content)
+    
+    # 保存记录
     last_file.write_text(clean_output)
 
-    if is_vim:
-        # Vim 模式下只输出最纯净的内容
+    # 6. 最终显示逻辑
+    if is_vim or (not sys.stdout.isatty()):
+        # Vim 或 管道输出：绝对纯净
+        sys.stdout.write(clean_output)
+    elif output_format:
         print(clean_output)
     else:
-        try:
-            # 使用 glow 渲染，如果是格式化输出则包一层 Markdown 方便高亮
-            # display_text = f"```{output_format}\n{clean_output}\n```" if not output_format else clean_output
-            display_text = clean_output
-            subprocess.run(["glow", "-s", "dark"], input=display_text.encode(), check=False)
-        except FileNotFoundError:
-            print(clean_output)
-    
+        # 普通 Prompt 输出
+        subprocess.run(["glow", "-s", "dark"], input=clean_output.encode(), check=False)
+
     return 0
 
 if __name__ == "__main__":

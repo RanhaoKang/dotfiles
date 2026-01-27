@@ -22,7 +22,7 @@ def extract_code_block(text: str) -> str:
     核心截断逻辑：如果发现 Markdown 代码块，只提取第一个代码块内部的内容。
     """
     # 匹配 ```lang ... ``` 格式
-    pattern = r"```(?:\w+)?\n(.*?)\n```"
+    pattern = r"```(?:\w+)?\n(.*?)```"
     match = re.search(pattern, text, re.DOTALL)
     if match:
         return match.group(1).strip()
@@ -150,7 +150,8 @@ def main():
     else:
         try:
             # 使用 glow 渲染，如果是格式化输出则包一层 Markdown 方便高亮
-            display_text = f"```{output_format}\n{clean_output}\n```" if output_format else clean_output
+            # display_text = f"```{output_format}\n{clean_output}\n```" if not output_format else clean_output
+            display_text = clean_output
             subprocess.run(["glow", "-s", "dark"], input=display_text.encode(), check=False)
         except FileNotFoundError:
             print(clean_output)

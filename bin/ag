@@ -13,7 +13,7 @@ fi
 
 if [ -z "$*" ] && [ -z "$STDIN_CONTENT" ]; then
     if [ -f "$HOME/.ag-last" ]; then
-        cat "$HOME/.ag-last"
+        cat "$HOME/.ag-last" | glow
     fi
     exit 0
 fi

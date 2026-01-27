@@ -81,6 +81,10 @@
       "rev": "de740991c12411b663994b2860f1a4fd0937c130",
       "src": "https://github.com/MunifTanjim/nui.nvim"
     },
+    "nvim-highlight-colors": {
+      "rev": "e2cb22089cc2358b2b995c09578224f142de6039",
+      "src": "https://github.com/brenoprata10/nvim-highlight-colors"
+    },
     "nvim-lspconfig": {
       "rev": "ac04ec3c2af08e9821b4eb64ede86072b9b213bf",
       "src": "https://github.com/neovim/nvim-lspconfig"
@@ -104,6 +108,10 @@
     "tmux.nvim": {
       "rev": "2c1c3be0ef287073cef963f2aefa31a15c8b9cd8",
       "src": "https://github.com/aserowy/tmux.nvim"
+    },
+    "vim-plugin-AnsiEsc": {
+      "rev": "690f820d20b6e3a79ba20499874eb7333aa4ca5c",
+      "src": "https://github.com/powerman/vim-plugin-AnsiEsc"
     },
     "vim-surround": {
       "rev": "3d188ed2113431cf8dac77be61b842acb64433d9",

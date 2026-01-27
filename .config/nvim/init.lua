@@ -68,7 +68,7 @@ vim.pack.add {
     { src = 'https://github.com/ibhagwan/fzf-lua' },
     { src = 'https://github.com/Vigemus/iron.nvim' },
     { src = 'https://github.com/chrisgrieser/nvim-spider' },
-    { src = 'https://github.com/aserowy/tmux.nvim' }
+    { src = 'https://github.com/aserowy/tmux.nvim' },
 }
 local map = vim.keymap.set
 
@@ -410,6 +410,16 @@ vim.cmd([[
   highlight TabLineSel guifg=#ffffff guibg=#5f5faf gui=bold  " 当前选中的 Tab：白字紫底
   highlight TabLine    guifg=#9e9e9e guibg=#303030 gui=none  " 未选中的 Tab：灰字暗底
 ]])
+
+-- init.lua 示例
+vim.api.nvim_create_user_command('CleanScript', function()
+  -- 移除回车符
+  vim.cmd([[%s/\r//ge]])
+  -- 移除大部分 ANSI 转义码 (如果不想装插件)
+  vim.cmd([[%s/\e\[[0-9;]*[mK]//ge]])
+  -- 回到第一行
+  vim.fn.cursor(1, 1)
+end, {})
 
 -- 绑定快捷键 <D-h> (macOS 的 Command 键通常对应 D)
 -- 如果你在 Linux/Windows 上使用 Super 键，可能需要根据终端模拟器调整

@@ -373,6 +373,44 @@ local function extract_lua_block()
     end
 end
 
+function my_tabline()
+  local s = ""
+  for i = 1, vim.fn.tabpagenr('$') do
+    -- 检查是否是当前选中的标签页
+    if i == vim.fn.tabpagenr() then
+      s = s .. "%#TabLineSel#" -- 切换到高亮组（当前选中的背景色）
+    else
+      s = s .. "%#TabLine#"    -- 切换到普通标签组
+    end
+
+    -- 设置标签页索引（用于鼠标点击）
+    s = s .. "%" .. i .. "T"
+
+    -- 获取当前标签页中窗口的 buffer 名称
+    local buflist = vim.fn.tabpagebuflist(i)
+    local winnr = vim.fn.tabpagewinnr(i)
+    local bufnr = buflist[winnr]
+    local bufname = vim.fn.bufname(bufnr)
+    
+    -- 处理文件名：如果为空显示 [No Name]，否则只取文件名
+    local filename = bufname ~= "" and vim.fn.fnamemodify(bufname, ":t") or "[No Name]"
+    
+    s = s .. " " .. i .. ":" .. filename .. " "
+  end
+
+  s = s .. "%#TabLineFill#%T" -- 填充剩余部分
+  return s
+end
+
+-- 应用配置
+vim.opt.tabline = "%!v:lua.my_tabline()"
+
+-- 自定义背景颜色（你可以根据喜好修改颜色）
+vim.cmd([[
+  highlight TabLineSel guifg=#ffffff guibg=#5f5faf gui=bold  " 当前选中的 Tab：白字紫底
+  highlight TabLine    guifg=#9e9e9e guibg=#303030 gui=none  " 未选中的 Tab：灰字暗底
+]])
+
 -- 绑定快捷键 <D-h> (macOS 的 Command 键通常对应 D)
 -- 如果你在 Linux/Windows 上使用 Super 键，可能需要根据终端模拟器调整
 vim.keymap.set('n', '<C-s>', extract_lua_block, { desc = 'Extract Lua block to test.lua' })

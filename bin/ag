@@ -1,57 +1,161 @@
-#!/bin/bash
+#!/usr/bin/env python3
 
-API_URL="https://api.deepseek.com/v1/chat/completions"
-MODEL="deepseek-chat"
-LOG_DIR="$HOME/.log"
-mkdir -p "$LOG_DIR"
-LOG_FILE="$LOG_DIR/$(date +%Y-%m-%d_%H-%M-%S).log"
+import sys
+import os
+import json
+import subprocess
+import tempfile
+import re
+from pathlib import Path
+from datetime import datetime
+import requests
 
-STDIN_CONTENT=""
-if [ -p /dev/stdin ]; then
-    STDIN_CONTENT=$(cat -)
-fi
+# --- 配置区 ---
+API_URL = "https://api.deepseek.com/v1/chat/completions"
+MODEL = "deepseek-chat"
+LOG_DIR = Path.home() / ".log"
+LOG_DIR.mkdir(exist_ok=True)
+LOG_FILE = LOG_DIR / f"{datetime.now().strftime('%Y-%m-%d_%H-%M-%S')}.log"
 
-if [ -z "$*" ] && [ -z "$STDIN_CONTENT" ]; then
-    if [ -f "$HOME/.ag-last" ]; then
-        cat "$HOME/.ag-last" | glow
-    fi
-    exit 0
-fi
+def extract_code_block(text: str) -> str:
+    """
+    核心截断逻辑：如果发现 Markdown 代码块，只提取第一个代码块内部的内容。
+    """
+    # 匹配 ```lang ... ``` 格式
+    pattern = r"```(?:\w+)?\n(.*?)\n```"
+    match = re.search(pattern, text, re.DOTALL)
+    if match:
+        return match.group(1).strip()
+    return text.strip()
 
-USER_PROMPT="$*"
+def main():
+    # --- 参数解析 ---
+    output_format = ""
+    user_prompt_parts = []
+    
+    args = sys.argv[1:]
+    i = 0
+    while i < len(args):
+        if args[i] == "-o" and i + 1 < len(args):
+            output_format = args[i + 1].lower()
+            i += 2
+        else:
+            user_prompt_parts.append(args[i])
+            i += 1
+    
+    user_prompt = " ".join(user_prompt_parts)
 
-if [ -n "$VIMRUNTIME" ]; then
-    STRICT_FORMAT="[STRICT: Output ONLY raw code. No markdown, no comments, no emojis, no explanations.] "
-    USER_PROMPT="${STRICT_FORMAT}${USER_PROMPT}"
-fi
+    # --- 读取标准输入 ---
+    stdin_content = ""
+    if not sys.stdin.isatty():
+        stdin_content = sys.stdin.read()
 
-FINAL_MESSAGE="${USER_PROMPT}"
-if [ -n "$STDIN_CONTENT" ]; then
-    FINAL_MESSAGE="${USER_PROMPT}\n\nContext/Input:\n${STDIN_CONTENT}"
-fi
+    # 如果无输入，则查看历史
+    if not user_prompt and not stdin_content:
+        last_file = Path.home() / ".ag-last"
+        if last_file.exists():
+            try:
+                subprocess.run(["glow", str(last_file)], check=False)
+            except FileNotFoundError:
+                print(last_file.read_text())
+        return 0
 
-echo "--- INPUT ---" > "$LOG_FILE"
-echo -e "$FINAL_MESSAGE" >> "$LOG_FILE"
-echo -e "\n--- API RESPONSE ---" >> "$LOG_FILE"
+    # --- 系统提示词处理 ---
+    # 强制让模型意识到它只需要输出纯代码
+    is_vim = "VIMRUNTIME" in os.environ
+    system_prompts = []
+    
+    if is_vim or output_format:
+        system_prompts.append("Output ONLY raw code. No explanations, no preamble, no conversational fillers.")
+    
+    if output_format:
+        system_prompts.append(f"Output valid {output_format} only.")
 
-PAYLOAD=$(jq -n \
-    --arg model "$MODEL" \
-    --arg msg "$FINAL_MESSAGE" \
-    '{model: $model, messages: [{role: "user", content: $msg}], stream: false}')
+    system_prompt = " ".join(system_prompts)
 
-RAW_RESPONSE=$(curl -s -X POST "$API_URL" \
-     -H 'Content-Type: application/json' \
-     -H "Authorization: Bearer ${DEEPSEEK_API_KEY}" \
-     -d "$PAYLOAD")
+    # --- 构建消息体 ---
+    final_message = user_prompt
+    if stdin_content:
+        final_message = f"{user_prompt}\n\n[Context/Input]:\n{stdin_content}"
 
-echo "$RAW_RESPONSE" >> "$LOG_FILE"
+    # --- 调用 API ---
+    api_key = os.environ.get("DEEPSEEK_API_KEY")
+    if not api_key:
+        print("Error: DEEPSEEK_API_KEY environment variable not set", file=sys.stderr)
+        return 1
 
-CLEAN_OUTPUT=$(echo "$RAW_RESPONSE" | jq -r '.choices[0].message.content // .error.message // "Error: No response"')
+    payload = {
+        "model": MODEL,
+        "messages": [
+            {"role": "system", "content": system_prompt},
+            {"role": "user", "content": final_message}
+        ],
+        "temperature": 0.2  # 降低随机性，使输出更稳定
+    }
 
-echo "$CLEAN_OUTPUT" > "$HOME/.ag-last"
+    try:
+        response = requests.post(API_URL, 
+                                 headers={"Authorization": f"Bearer {api_key}"}, 
+                                 json=payload, 
+                                 timeout=45)
+        response.raise_for_status()
+        raw_response = response.json()
+    except Exception as e:
+        print(f"Error calling API: {e}", file=sys.stderr)
+        return 1
 
-if [ -n "$VIMRUNTIME" ]; then
-    echo "$CLEAN_OUTPUT"
-else
-    echo "$CLEAN_OUTPUT" | glow -s dark 2>/dev/null || echo "$CLEAN_OUTPUT"
-fi
+    # 日志记录 (异步思维：先拿数据再记日志)
+    with open(LOG_FILE, "w") as f:
+        json.dump({"payload": payload, "response": raw_response}, f, indent=2)
+
+    # 提取内容
+    if "choices" in raw_response:
+        clean_output = raw_response["choices"][0]["message"]["content"]
+    else:
+        print(f"API Error: {raw_response}", file=sys.stderr)
+        return 1
+
+    # --- 截断逻辑应用 ---
+    # 如果指定了 -o 或者在 Vim 环境下，应用严格截断
+    if output_format or is_vim:
+        clean_output = extract_code_block(clean_output)
+
+    # --- 语法校验 ---
+    valid_code = True
+    if output_format == "json":
+        try:
+            json.loads(clean_output)
+        except: valid_code = False
+    elif output_format == "python":
+        try:
+            compile(clean_output, '<string>', 'exec')
+        except: valid_code = False
+    elif output_format == "lua":
+        # 尝试使用 luac 检查
+        try:
+            subprocess.run(["luac", "-p", "-"], input=clean_output.encode(), 
+                           check=True, capture_output=True)
+        except: valid_code = False
+
+    if output_format and not valid_code:
+        print(f"\033[0;31m! Warning: Syntax check failed for {output_format}\033[0m", file=sys.stderr)
+
+    # --- 持久化与输出 ---
+    last_file = Path.home() / ".ag-last"
+    last_file.write_text(clean_output)
+
+    if is_vim:
+        # Vim 模式下只输出最纯净的内容
+        print(clean_output)
+    else:
+        try:
+            # 使用 glow 渲染，如果是格式化输出则包一层 Markdown 方便高亮
+            display_text = f"```{output_format}\n{clean_output}\n```" if output_format else clean_output
+            subprocess.run(["glow", "-s", "dark"], input=display_text.encode(), check=False)
+        except FileNotFoundError:
+            print(clean_output)
+    
+    return 0
+
+if __name__ == "__main__":
+    sys.exit(main())

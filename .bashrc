@@ -27,7 +27,7 @@ PROMPT_COMMAND=${PROMPT_COMMAND:+${PROMPT_COMMAND%;}; }osc7_cwd
 
 export https_proxy=http://127.0.0.1:7897 http_proxy=http://127.0.0.1:7897 all_proxy=socks5://127.0.0.1:7897
 export PATH="$HOME/dotfiles/bin/":$PATH
-export EDITOR=nvim
+export EDITOR=vim
 export BROWSER=firefox
 export TERMINAL=foot
 export SHELL=/bin/bash
@@ -39,3 +39,4 @@ alias ll="ls -l"
 trap "" SIGTSTP
 alias pac=pacman
 export PS1="\n\[\e[32m\]\u@\h \[\e[33m\]\w\[\e[0m\]\n\$ "
+setxkbmap -option caps:escape

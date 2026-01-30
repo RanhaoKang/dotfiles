@@ -40,3 +40,4 @@ trap "" SIGTSTP
 alias pac=pacman
 export PS1="\n\[\e[32m\]\u@\h \[\e[33m\]\w\[\e[0m\]\n\$ "
 setxkbmap -option caps:escape
+alias cb='xclip -selection clipboard'

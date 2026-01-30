@@ -72,9 +72,54 @@ vim.pack.add {
 }
 local map = vim.keymap.set
 
-if not vim.env.EINK then
+if not vim.env.EINK and not vim.env.AR then
     vim.cmd.colorscheme 'gruber-darker'
 end
+
+if vim.env.AR then
+    local function darken_all_highlights(ratio)
+        -- 获取当前所有高亮组 (ns_id 为 0 是全局)
+        local highlights = vim.api.nvim_get_hl(0, {})
+
+        for name, hl in pairs(highlights) do
+            local new_hl = {}
+
+            -- 处理前景色：如果存在则压暗
+            if hl.fg then
+                -- 将十进制颜色转为 RGB 分量
+                local r = math.floor(bit.band(bit.rshift(hl.fg, 16), 0xff) * ratio)
+                local g = math.floor(bit.band(bit.rshift(hl.fg, 8), 0xff) * ratio)
+                local b = math.floor(bit.band(hl.fg, 0xff) * ratio)
+                new_hl.fg = string.format("#%02x%02x%02x", r, g, b)
+            end
+
+            -- 强制背景为 NONE
+            new_hl.bg = "NONE"
+            
+            -- 继承其他属性（加粗、斜体、下划线等）
+            new_hl.bold = hl.bold
+            new_hl.italic = hl.italic
+            new_hl.underline = hl.underline
+            new_hl.undercurl = hl.undercurl
+
+            -- 重新定义高亮组
+            vim.api.nvim_set_hl(0, name, new_hl)
+        end
+
+        -- 特殊处理：强制 Normal 组和非文本区背景透明
+        vim.api.nvim_set_hl(0, "Normal", { bg = "NONE", fg = vim.api.nvim_get_hl(0, {name="Normal"}).fg })
+        vim.api.nvim_set_hl(0, "NormalFloat", { bg = "NONE" })
+        vim.api.nvim_set_hl(0, "NonText", { bg = "NONE" })
+        vim.api.nvim_set_hl(0, "EndOfBuffer", { bg = "NONE" })
+    end
+
+    -- 启用真彩色支持（这是处理 Hex 颜色的前提）
+    vim.opt.termguicolors = true
+
+    -- 执行压暗 50% 并去背景
+    darken_all_highlights(0.5)
+end
+
 require("mini.surround").setup()
 require("large_file").setup()
 require("diffview").setup()

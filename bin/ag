@@ -55,6 +55,7 @@ def main():
     
     user_prompt = " ".join(user_prompt_parts)
     is_vim = "VIMRUNTIME" in os.environ
+    is_vim = False
     last_file = Path.home() / ".ag-last"
 
     # 2. 读取标准输入
@@ -83,9 +84,9 @@ def main():
         print("Error: DEEPSEEK_API_KEY not set", file=sys.stderr)
         return 1
 
-    sys_msgs = ["Output ONLY raw code. No explanations."]
+    sys_msgs = []
     if output_format:
-        sys_msgs.append(f"Output valid {output_format} only.")
+        sys_msgs.append(f"Output ONLY raw code. No explanations.Output valid {output_format} only.")
     
     payload = {
         "model": MODEL,

@@ -38,10 +38,9 @@ alias ls="ls --color"
 alias ll="ls -l"
 trap "" SIGTSTP
 alias pac=pacman
-export PS1="\n\[\e[32m\]\u@\h \[\e[33m\]\w\[\e[0m\]\n\$ "
+# export PS1="\n\[\e[32m\]\u@\h \[\e[33m\]\w\[\e[0m\]\n\$ "
 setxkbmap -option caps:escape
 alias cb='xclip -selection clipboard'
 function set_brightness() {
-    # 尝试最多 3 次，且不进行验证以提高速度
-    ddcutil setvcp 10 $1 --retry 3 --noverify -d 1
+    ddcutil setvcp 10 $1 --noverify -d 1
 }

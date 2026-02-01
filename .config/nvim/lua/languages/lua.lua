@@ -227,3 +227,13 @@ function Yua_CreateTest()
   end
   vim.cmd('edit ' .. vim.fn.fnameescape(new_filename))
 end
+
+function Yua_HotReload(file_path)
+    local data = { cmd = "yua_hotreload", path = file_path }
+    local payload = vim.json.encode(data) -- UDP 通常不需要 \n 结尾，但保留也没关系
+
+    -- 关键修改：使用 UDP4
+    local cmd = string.format("echo %s | socat - UDP4:127.0.0.1:9965", vim.fn.shellescape(payload))
+
+    vim.fn.jobstart(cmd, { detach = true })
+end

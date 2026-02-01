@@ -311,6 +311,8 @@ vim.api.nvim_create_user_command('Y', function(opts)
     vim.notify("args: " .. opts.args)
     if opts.args == 'test' then
         Yua_CreateTest()
+    elseif opts.args == 'reload' then
+        Yua_HotReload('233')
     end
 end, { nargs = '*' })
 

@@ -44,3 +44,6 @@ alias cb='xclip -selection clipboard'
 function set_brightness() {
     ddcutil setvcp 10 $1 --noverify -d 1
 }
+
+alias date='date +"%Y-%m-%d %H:%M:%S"'
+

@@ -1,5 +1,7 @@
 local map = vim.keymap.set
 
+local RELOAD_GROUP = vim.api.nvim_create_augroup("LuaHotReloadGroup", { clear = true })
+
 vim.lsp.enable('lua_ls')
 ----[[
 
@@ -237,3 +239,12 @@ function Yua_HotReload(file_path)
 
     vim.fn.jobstart(cmd, { detach = true })
 end
+
+vim.api.nvim_create_autocmd("BufWritePost", {
+    pattern = {"*.lua", "*.lua.txt"},
+    group = RELOAD_GROUP,
+    callback = function()
+        local current_file = vim.fn.expand('%:p')
+        Yua_HotReload(current_file)
+    end,
+})

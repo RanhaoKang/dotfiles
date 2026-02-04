@@ -77,7 +77,14 @@ if not vim.env.EINK and not vim.env.AR then
 end
 
 if vim.env.AR then
-    local function darken_all_highlights(ratio)
+    local function darken_color(color, ratio)
+        local r = math.floor(bit.band(bit.rshift(color, 16), 0xff) * ratio)
+        local g = math.floor(bit.band(bit.rshift(color, 8), 0xff) * ratio)
+        local b = math.floor(bit.band(color, 0xff) * ratio)
+        return string.format("#%02x%02x%02x", r, g, b)
+    end
+
+    local function apply_ar_theme()
         -- 获取当前所有高亮组 (ns_id 为 0 是全局)
         local highlights = vim.api.nvim_get_hl(0, {})
 
@@ -86,11 +93,7 @@ if vim.env.AR then
 
             -- 处理前景色：如果存在则压暗
             if hl.fg then
-                -- 将十进制颜色转为 RGB 分量
-                local r = math.floor(bit.band(bit.rshift(hl.fg, 16), 0xff) * ratio)
-                local g = math.floor(bit.band(bit.rshift(hl.fg, 8), 0xff) * ratio)
-                local b = math.floor(bit.band(hl.fg, 0xff) * ratio)
-                new_hl.fg = string.format("#%02x%02x%02x", r, g, b)
+                new_hl.fg = darken_color(hl.fg, 0.25)
             end
 
             -- 强制背景为 NONE
@@ -111,13 +114,38 @@ if vim.env.AR then
         vim.api.nvim_set_hl(0, "NormalFloat", { bg = "NONE" })
         vim.api.nvim_set_hl(0, "NonText", { bg = "NONE" })
         vim.api.nvim_set_hl(0, "EndOfBuffer", { bg = "NONE" })
+
+        -- 降低高亮/选择区域亮度 - 使用深灰色而非纯白
+        vim.api.nvim_set_hl(0, "Visual", { bg = "#333333", fg = "NONE" })
+        vim.api.nvim_set_hl(0, "CursorLine", { bg = "#2a2a2a" })
+        vim.api.nvim_set_hl(0, "CursorColumn", { bg = "#2a2a2a" })
+        vim.api.nvim_set_hl(0, "Search", { bg = "#444444", fg = "#aaaaaa" })
+        vim.api.nvim_set_hl(0, "IncSearch", { bg = "#555555", fg = "#bbbbbb" })
+        vim.api.nvim_set_hl(0, "MatchParen", { bg = "#3a3a3a", fg = "#888888", bold = true })
+        vim.api.nvim_set_hl(0, "Pmenu", { bg = "#2a2a2a", fg = "#999999" })
+        vim.api.nvim_set_hl(0, "PmenuSel", { bg = "#444444", fg = "#bbbbbb" })
+        vim.api.nvim_set_hl(0, "LineNr", { fg = "#444444" })
+        vim.api.nvim_set_hl(0, "CursorLineNr", { fg = "#666666" })
+        vim.api.nvim_set_hl(0, "StatusLine", { bg = "#2a2a2a", fg = "#888888" })
+        vim.api.nvim_set_hl(0, "StatusLineNC", { bg = "#222222", fg = "#555555" })
+        -- 完全禁用 TabLine 在 AR 模式下
+        vim.api.nvim_set_hl(0, "TabLineSel", { bg = "NONE", fg = "NONE" })
+        vim.api.nvim_set_hl(0, "TabLine", { bg = "NONE", fg = "NONE" })
+        vim.api.nvim_set_hl(0, "TabLineFill", { bg = "NONE", fg = "NONE" })
+        
+        -- 光标设置为灰色（非白色）
+        vim.api.nvim_set_hl(0, "Cursor", { bg = "#666666", fg = "#000000" })
+        vim.api.nvim_set_hl(0, "lCursor", { bg = "#666666", fg = "#000000" })
     end
 
     -- 启用真彩色支持（这是处理 Hex 颜色的前提）
     vim.opt.termguicolors = true
+    
+    -- AR 模式下禁用 Tabline
+    vim.opt.showtabline = 0
 
-    -- 执行压暗 50% 并去背景
-    darken_all_highlights(0.5)
+    -- 应用 AR 主题
+    apply_ar_theme()
 end
 
 require("mini.surround").setup()

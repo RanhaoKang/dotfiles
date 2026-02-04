@@ -172,6 +172,11 @@ keys.globalkeys = gears.table.join(
       end,
       {description = "application launcher", group = "launcher"}
    ),
+    -- 截图快捷键: Ctrl + Alt + A
+    awful.key({ "Control", "Mod1" }, "a", function ()
+        awful.spawn.with_shell("scrot -s -f '/tmp/screenshot_%Y%m%d_%H%M%S.png' -e 'xclip -selection clipboard -t image/png -i $f'")
+    end,
+    {description = "select a region and copy to clipboard", group = "screenshot"}),
 
    -- =========================================
    -- FUNCTION KEYS

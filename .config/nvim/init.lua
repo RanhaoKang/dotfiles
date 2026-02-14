@@ -93,7 +93,7 @@ if vim.env.AR then
 
             -- 处理前景色：如果存在则压暗
             if hl.fg then
-                new_hl.fg = darken_color(hl.fg, 0.25)
+                new_hl.fg = darken_color(hl.fg, 0.15)
             end
 
             -- 强制背景为 NONE

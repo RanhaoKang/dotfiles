@@ -1,0 +1,22 @@
+# Disable selection/highlight background color
+set region-highlight-mode none
+
+# Disable active region colors (selection)
+set active-region-start-color ""
+set active-region-end-color ""
+
+# Disable mark-modified-lines
+set mark-modified-lines off
+
+# Disable visible-stats
+set visible-stats off
+
+# Set blink-matching-paren to off (disables paren highlighting)
+set blink-matching-paren off
+
+# Disable colored completion prefix
+set colored-stats off
+set colored-completion-prefix off
+
+# Menu complete without color highlight
+set menu-complete-display-prefix off

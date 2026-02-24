@@ -95,6 +95,16 @@ function rules.create(clientkeys, clientbuttons)
          }, properties = {fullscreen = true}
       },
 
+      -- Love2D (Yua game engine) - floating by default
+      {
+         rule_any = {
+            class = {
+               "love",
+               "Yua",
+            },
+         }, properties = {floating = true, placement = awful.placement.centered}
+      },
+
       -- "Switch to tag"
       -- These clients make you switch to their tag when they appear
       {

@@ -39,7 +39,11 @@ alias ll="ls -l"
 trap "" SIGTSTP
 alias pac=pacman
 # export PS1="\n\[\e[32m\]\u@\h \[\e[33m\]\w\[\e[0m\]\n\$ "
-setxkbmap -option caps:escape
+if [[ "$(uname -s)" == "Darwin" ]]; then
+    hidutil property --set '{"UserKeyMapping":[{"HIDKeyboardModifierMappingSrc":0x700000039,"HIDKeyboardModifierMappingDst":0x70000001F}]}'
+else
+    setxkbmap -option caps:escape
+fi
 alias cb='xclip -selection clipboard'
 function set_brightness() {
     ddcutil setvcp 10 $1 --noverify -d 1

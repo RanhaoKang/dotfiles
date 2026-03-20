@@ -13,6 +13,10 @@
 - Magic: [Clash Verge Rev](https://github.com/clash-verge-rev/clash-verge-rev/)
 - AUR Helper: [yay]() but still don't get the difference among alternatives
 
+## XFCE
+
+Apply my XFCE application/window shortcuts with `bin/apply-xfce-shortcuts.sh`.
+
 # Keymap intuition
 - `hjkl` for direct navigation, `tab`/`<s-tab>` for next/prev navigation
 - tiers:

@@ -7,7 +7,7 @@
 - Notifications: [mako](https://github.com/emersion/mako/)
 - Editor: [neovim](https://neovim.io/)
 - Git: [tig](https://github.com/jonas/tig/)(pick and stage files)
-- Terminal: [foot](https://codeberg.org/dnkl/foot/)
+- Terminal: [Ghostty](https://ghostty.org/)
 - Fonts: Not Decided yet.
 - File Manager: Not decided yet.
 - Magic: [Clash Verge Rev](https://github.com/clash-verge-rev/clash-verge-rev/)

@@ -182,8 +182,103 @@ alias date='date +"%Y-%m-%d %H:%M:%S"'
 # bind 'set active-region-end-color "\e[m"' 2>/dev/null
 #
 # # Set cursor to blinking block or steady block in dark grey
-# # [?17;#1a1a1a;c for color (some terminals)
-# # [2 q for steady block
+# # [?17;#1a1a1a;c for color (some terminals)
+# # [2 q for steady block
 # bind 'set vi-ins-mode-string "\1\e[2 q\e]12;#1a1a1a\a\2"' 2>/dev/null
 # bind 'set vi-cmd-mode-string "\1\e[2 q\e]12;#1a1a1a\a\2"' 2>/dev/null
 #
+
+# Git wrapper function with feat and add safety features
+git() {
+  # git feat: 从 origin/master 创建特性分支并创建 Draft MR
+  if [[ "$1" == "feat" ]]; then
+    local feature_name="$2"
+    if [ -z "$feature_name" ]; then
+      echo "用法: git feat <feature-name>"
+      return 1
+    fi
+
+    local branch_name="feat-${feature_name}"
+    local current_branch
+    current_branch=$(command git rev-parse --abbrev-ref HEAD 2>/dev/null)
+
+    echo "🚀 创建特性分支: $branch_name"
+
+    # 获取最新的 origin/master
+    echo "📥 获取最新 origin/master..."
+    command git fetch origin master || {
+      echo "❌ 获取 origin/master 失败"
+      return 1
+    }
+
+    # 从 origin/master 创建新分支
+    echo "🔀 从 origin/master 创建分支 $branch_name..."
+    command git checkout -b "$branch_name" origin/master || {
+      echo "❌ 创建分支失败"
+      return 1
+    }
+
+    # push 到远程
+    echo "📤 推送到远程..."
+    command git push -u origin "$branch_name" || {
+      echo "❌ push 失败，尝试回滚到原分支 $current_branch"
+      command git checkout "$current_branch"
+      command git branch -D "$branch_name" 2>/dev/null
+      return 1
+    }
+
+    # 创建 Draft MR
+    echo "📝 创建 Draft MR..."
+    if command -v glab &>/dev/null; then
+      glab mr create --draft --title "Draft: $feature_name" --description "WIP: $feature_name" || {
+        echo "⚠️ MR 创建失败，但分支已创建并推送"
+      }
+    elif command -v gh &>/dev/null; then
+      # GitHub CLI - 创建 draft PR
+      gh pr create --draft --title "Draft: $feature_name" --body "WIP: $feature_name" || {
+        echo "⚠️ PR 创建失败，但分支已创建并推送"
+      }
+    elif [ -n "$GITLAB_TOKEN" ]; then
+      # 使用 GitLab API 创建 MR
+      local project_id
+      project_id=$(command git remote get-url origin | sed -E 's/.*[:/]([^/]+\/[^/]+)\.git$/\1/' | sed 's/\//%2F/g')
+      local target_branch="master"
+
+      curl -s -X POST \
+        --header "PRIVATE-TOKEN: $GITLAB_TOKEN" \
+        --header "Content-Type: application/json" \
+        --data "{\"source_branch\":\"$branch_name\",\"target_branch\":\"$target_branch\",\"title\":\"Draft: $feature_name\",\"description\":\"WIP: $feature_name\",\"work_in_progress\":true}" \
+        "https://gitlab.com/api/v4/projects/$project_id/merge_requests" > /dev/null 2>&1 && \
+        echo "✅ Draft MR 创建成功" || \
+        echo "⚠️ MR 创建失败（可能需要检查 GITLAB_TOKEN 或项目权限），但分支已创建并推送"
+    else
+      echo "⚠️ 未找到 glab/gh CLI，且 GITLAB_TOKEN 未设置，跳过 MR 创建"
+      echo "   分支 $branch_name 已创建并推送至远程"
+    fi
+
+    echo "✅ 完成！当前分支: $branch_name"
+    return 0
+  fi
+
+  # git add 安全检查：阻止 git add -A, git add ., git add --all
+  if [[ "$1" == "add" ]]; then
+    shift
+
+    for arg in "$@"; do
+      case "$arg" in
+        -A|--all|.)
+          echo "❌ blocked: git add $arg (too broad)"
+          return 1
+          ;;
+      esac
+    done
+
+    # 如果没有参数，其实等价于 git add .
+    if [ $# -eq 0 ]; then
+      echo "❌ blocked: git add (no args = add .)"
+      return 1
+    fi
+  fi
+
+  command git "$@"
+}

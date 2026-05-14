@@ -26,7 +26,7 @@ osc7_cwd() {
 PROMPT_COMMAND=${PROMPT_COMMAND:+${PROMPT_COMMAND%;}; }osc7_cwd
 
 # export https_proxy=http://127.0.0.1:7897 http_proxy=http://127.0.0.1:7897 all_proxy=socks5://127.0.0.1:7897
-export PATH="$HOME/dotfiles/bin/":$PATH
+export PATH="$HOME/projects/dotfiles/bin:$HOME/dotfiles/bin:/usr/local/bin:/opt/homebrew/bin:$PATH"
 export EDITOR=vi
 export BROWSER=firefox
 export TERMINAL=ghostty
@@ -38,11 +38,16 @@ alias ls="ls --color"
 alias ll="ls -l"
 trap "" SIGTSTP
 alias pac=pacman
+vnc() {
+    open "vnc://$1.local"
+}
 # export PS1="\n\[\e[32m\]\u@\h \[\e[33m\]\w\[\e[0m\]\n\$ "
-if [[ "$(uname -s)" == "Darwin" ]]; then
-    hidutil property --set '{"UserKeyMapping":[{"HIDKeyboardModifierMappingSrc":0x700000039,"HIDKeyboardModifierMappingDst":0x70000001F}]}'
-else
-    setxkbmap -option caps:escape
+if [[ $- == *i* ]]; then
+    if [[ "$(uname -s)" == "Darwin" ]]; then
+        hidutil property --set '{"UserKeyMapping":[{"HIDKeyboardModifierMappingSrc":0x700000039,"HIDKeyboardModifierMappingDst":0x70000001F}]}' >/dev/null
+    else
+        setxkbmap -option caps:escape
+    fi
 fi
 alias cb='xclip -selection clipboard'
 function set_brightness() {
@@ -163,6 +168,7 @@ cmux() {
     esac
 }
 
+unset -f cmux 2>/dev/null || true
 alias date='date +"%Y-%m-%d %H:%M:%S"'
 #
 # # Cursor color: very dark grey (#1a1a1a)

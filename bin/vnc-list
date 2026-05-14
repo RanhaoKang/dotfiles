@@ -1,0 +1,212 @@
+#!/usr/bin/env bash
+set -eo pipefail
+set -f
+
+config_file=${SSH_CONFIG:-"$HOME/.ssh/config"}
+seen_config_files=()
+seen_hosts=()
+
+usage() {
+    echo "Usage: vnc-list [--list]"
+}
+
+is_pattern_host() {
+    [[ "$1" == "*" || "$1" == *"*"* || "$1" == *"?"* || "$1" == *"!"* ]]
+}
+
+expand_include() {
+    local pattern=$1
+
+    if [[ "$pattern" == "~/"* ]]; then
+        pattern="$HOME/${pattern#\~/}"
+    fi
+
+    local matches=()
+    shopt -s nullglob
+    set +f
+    matches=($pattern)
+    set -f
+    shopt -u nullglob
+
+    printf '%s\n' "${matches[@]}"
+}
+
+collect_config_files() {
+    local file=$1
+    local line keyword rest include
+
+    if [[ "$file" == "~/"* ]]; then
+        file="$HOME/${file#\~/}"
+    fi
+
+    [[ -f "$file" ]] || return 0
+    seen_config_file "$file" && return 0
+    seen_config_files+=("$file")
+    printf '%s\n' "$file"
+
+    while IFS= read -r line || [[ -n "$line" ]]; do
+        line=${line%%#*}
+        read -r keyword rest <<<"$line" || true
+        keyword=$(printf '%s' "$keyword" | tr '[:upper:]' '[:lower:]')
+        [[ "$keyword" == "include" ]] || continue
+
+        for include in $rest; do
+            while IFS= read -r file; do
+                collect_config_files "$file"
+            done < <(expand_include "$include")
+        done
+    done < "$file"
+}
+
+seen_config_file() {
+    local file=$1
+    local seen
+
+    for seen in "${seen_config_files[@]}"; do
+        [[ "$seen" == "$file" ]] && return 0
+    done
+    return 1
+}
+
+seen_host() {
+    local host=$1
+    local seen
+
+    for seen in "${seen_hosts[@]}"; do
+        [[ "$seen" == "$host" ]] && return 0
+    done
+    return 1
+}
+
+list_hosts() {
+    local file line keyword rest host
+
+    while IFS= read -r file; do
+        while IFS= read -r line || [[ -n "$line" ]]; do
+            line=${line%%#*}
+            read -r keyword rest <<<"$line" || true
+            keyword=$(printf '%s' "$keyword" | tr '[:upper:]' '[:lower:]')
+            [[ "$keyword" == "host" ]] || continue
+
+            for host in $rest; do
+                is_pattern_host "$host" && continue
+                seen_host "$host" && continue
+                seen_hosts+=("$host")
+                printf '%s\n' "$host"
+            done
+        done < "$file"
+    done < <(collect_config_files "$config_file")
+}
+
+draw() {
+    local selected=$1
+    local count=${#hosts[@]}
+    local i prefix
+
+    tput clear
+    printf 'vnc-list (%d hosts)  j/k: move  enter: open  q: quit\n\n' "$count"
+
+    for i in "${!hosts[@]}"; do
+        prefix='  '
+        if (( i == selected )); then
+            prefix='> '
+            tput smso
+        fi
+        printf '%s%s\n' "$prefix" "${hosts[$i]}"
+        if (( i == selected )); then
+            tput rmso
+        fi
+    done
+}
+
+open_vnc() {
+    local host=$1
+    open "vnc://$host.local"
+}
+
+run_tui() {
+    local selected=0
+    local key rest
+
+    if ((${#hosts[@]} == 0)); then
+        echo "No hosts found in $config_file"
+        return 1
+    fi
+    if [[ ! -t 0 ]]; then
+        echo "vnc-list requires an interactive terminal" >&2
+        return 1
+    fi
+
+    trap 'tput cnorm; stty sane; tput clear' EXIT
+    stty -echo -icanon time 0 min 0
+    tput civis
+    draw "$selected"
+
+    while true; do
+        if IFS= read -rsn1 key; then
+            [[ -z "$key" ]] && break
+        else
+            sleep 0.03
+            continue
+        fi
+
+        case "$key" in
+            q)
+                return 0
+                ;;
+            j)
+                (( selected < ${#hosts[@]} - 1 )) && ((selected++))
+                draw "$selected"
+                ;;
+            k)
+                (( selected > 0 )) && ((selected--))
+                draw "$selected"
+                ;;
+            $'\n'|$'\r')
+                break
+                ;;
+            $'\e')
+                IFS= read -rsn2 -t 0.05 rest || true
+                case "$rest" in
+                    '[B')
+                        (( selected < ${#hosts[@]} - 1 )) && ((selected++))
+                        draw "$selected"
+                        ;;
+                    '[A')
+                        (( selected > 0 )) && ((selected--))
+                        draw "$selected"
+                        ;;
+                    *)
+                        return 0
+                        ;;
+                esac
+                ;;
+        esac
+    done
+
+    trap - EXIT
+    tput cnorm
+    stty sane
+    tput clear
+    open_vnc "${hosts[$selected]}"
+}
+
+case "${1:-}" in
+    --list)
+        list_hosts
+        ;;
+    -h|--help)
+        usage
+        ;;
+    "")
+        hosts=()
+        while IFS= read -r host; do
+            hosts+=("$host")
+        done < <(list_hosts)
+        run_tui
+        ;;
+    *)
+        usage >&2
+        exit 1
+        ;;
+esac

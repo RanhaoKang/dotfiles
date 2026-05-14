@@ -17,6 +17,13 @@
 
 Apply my XFCE application/window shortcuts with `bin/apply-xfce-shortcuts.sh`.
 
+## SSH and terminal
+
+- `~/.ssh/config` should include `~/projects/dotfiles/.ssh/config` or `~/dotfiles/.ssh/config`.
+- `ssh me` allocates a TTY and runs `cmux attach main`.
+- `ssh ci` forces `TERM=xterm-256color` so old ncurses apps keep working.
+- Run `bin/install-terminfo` on a remote host when Ghostty terminfo is missing.
+
 # Keymap intuition
 - `hjkl` for direct navigation, `tab`/`<s-tab>` for next/prev navigation
 - tiers:

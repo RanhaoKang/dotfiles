@@ -1,0 +1,13 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+terms=(xterm-ghostty ghostty tmux-256color)
+
+for term in "${terms[@]}"; do
+    if infocmp "$term" >/dev/null 2>&1; then
+        infocmp "$term" | tic -x -
+        echo "installed $term"
+    else
+        echo "missing local terminfo: $term" >&2
+    fi
+done

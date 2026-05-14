@@ -1,0 +1,19 @@
+#!/usr/bin/env sh
+set -eu
+
+dotfiles_root=
+if [ -d "$HOME/projects/dotfiles" ]; then
+    dotfiles_root=$HOME/projects/dotfiles
+elif [ -d "$HOME/dotfiles" ]; then
+    dotfiles_root=$HOME/dotfiles
+fi
+
+if command -v nvim >/dev/null 2>&1; then
+    if [ -n "$dotfiles_root" ] && [ -f "$dotfiles_root/.config/nvim/init.lua" ]; then
+        XDG_CONFIG_HOME=$dotfiles_root/.config exec nvim "$@"
+    fi
+
+    exec nvim "$@"
+fi
+
+exec vim "$@"

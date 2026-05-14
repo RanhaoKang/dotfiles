@@ -21,7 +21,8 @@ Apply my XFCE application/window shortcuts with `bin/apply-xfce-shortcuts.sh`.
 
 - `~/.ssh/config` should include `~/projects/dotfiles/.ssh/config` or `~/dotfiles/.ssh/config`.
 - `ssh me` allocates a TTY and runs `cmux attach main`.
-- `ssh ci` forces `TERM=xterm-256color` so old ncurses apps keep working.
+- `ssh ci` forces `TERM=xterm-256color`, allocates a TTY, keeps the remote login shell, and puts dotfiles `bin` on `PATH`.
+- `vi` is a wrapper for Neovim that uses the shared dotfiles config and plugins when available.
 - Run `bin/install-terminfo` on a remote host when Ghostty terminfo is missing.
 
 # Keymap intuition

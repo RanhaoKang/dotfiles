@@ -31,6 +31,7 @@ export EDITOR=vi
 export BROWSER=firefox
 export TERMINAL=ghostty
 export SHELL=/bin/bash
+export VISUAL=vi
 
 alias ..='cd ..'
 alias tig="tig status"

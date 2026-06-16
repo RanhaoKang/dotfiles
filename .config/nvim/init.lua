@@ -28,7 +28,7 @@ vim.g.mapleader = " "
 vim.g.maplocalleader = " "
 
 opt.completeopt = { 'menuone', 'noinsert', 'fuzzy' }
-
+require('vim._core.ui2').enable()
 -- Mapping --
 local opts = { noremap = true, silent = true }
 vim.api.nvim_create_user_command('Make ui', ':!cat scripts/dev/template/ui.lua >> %', {
